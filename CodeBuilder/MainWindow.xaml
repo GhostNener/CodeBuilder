@@ -1,0 +1,76 @@
+﻿<Window x:Class="CodeBuilder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CodeBuilder" Icon="CodeBuilder.ico" Height="500" Width="1000" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen" Closed="Window_Closed">
+    <Grid Margin="0,0,0,-9">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" ></RowDefinition>
+            <RowDefinition Height="20" ></RowDefinition>
+            <RowDefinition Height="20" ></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="20" ></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition  Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="1" Grid.ColumnSpan="2" Name="tbConnStr" KeyDown="tbConnStr_KeyDown"></TextBox>
+            <Button  Grid.Column="4"  Content="连接" Name="btnConnect" Click="btnConnect_Click" Height="20" IsDefault="True"/>
+        </Grid>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="80"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox  Grid.Column="1" Name="tbNamespace" GotFocus="tbNamespace_GotFocus" LostFocus="tbNamespace_LostFocus" PreviewMouseDown="tbNamespace_PreviewMouseDown" AutoWordSelection="True"></TextBox>
+            <ComboBox Grid.Column="2" IsEnabled="False" Name="cbTables" GotFocus="cbTables_GotFocus" Margin="5,0"/>
+            <ComboBox Grid.Column="3" IsEnabled="False" Name="cbDAL" GotFocus="cbTables_GotFocus" Margin="5,0"/>
+            <Button Grid.Column="4" Content="生成" IsEnabled="False" Name="btnGenerateCode" Click="btnGenerateCode_Click" Margin="5,0"/>
+            <TextBox Grid.Column="5"  Name="tbSelectPath" PreviewMouseDoubleClick="tbSelectPath_PreviewMouseDoubleClick" Margin="5,0"></TextBox>
+            <Button Grid.Column="6" Content="导出" Name="btnExport" Click="btnExport_Click" IsEnabled="False" Margin="5,0" ></Button>
+            <Button Content="一键导出" Grid.Column="7"  Name="btnExportALL" Width="75" IsEnabled="False" Click="btnExportALL_Click" Margin="5,0,0,0"></Button>
+        </Grid>
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Name="gridLeft"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Name="gridRight"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="1" Background="AliceBlue" Text="双击复制Model" IsReadOnly="True" Name="tbModel" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" UndoLimit="0" PreviewMouseDoubleClick="TextBox_PreviewMouseDoubleClick">
+                <TextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="复制全部" Click="btnCopyModel"></MenuItem>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
+            <TextBox Grid.Column="3" Background="Azure" Text="双击复制DAL"  IsReadOnly="True" Name="tbDAL" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" UndoLimit="0" PreviewMouseDoubleClick="TextBox_PreviewMouseDoubleClick">
+                <TextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="复制全部" Click="btnCopyDAL"></MenuItem>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
+ 
+        </Grid>
+        <Grid Grid.Row="6" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <TextBlock Text="关于" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand" MouseDown="TextBlock_MouseDown"   />
+        </Grid>
+    </Grid>
+</Window>

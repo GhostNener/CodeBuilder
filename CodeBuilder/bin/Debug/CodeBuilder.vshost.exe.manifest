@@ -43,24 +43,24 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="CodeBuilder.exe" size="178176">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="CodeBuilder.exe" size="179200">
       <assemblyIdentity name="CodeBuilder" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>g4fY7zakb6jOy0RmUwOkP5JaduvsrRvi9n4MMyORpVQ=</dsig:DigestValue>
+        <dsig:DigestValue>W0ojJKcKInZZ1vEqbwbEoX53WaDjXxBKkEcrGPA2qKE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="CodeBuilder.exe.config" size="11769">
+  <file name="CodeBuilder.exe.config" size="11496">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>9iBZsBme8GFNc6qPGzq8R3FtcgaClHXEj+BGrvS40zI=</dsig:DigestValue>
+      <dsig:DigestValue>WnSFJHhuxqDNKIEiBM3NJVT6g+YXzj/NvdjUOGgDzu8=</dsig:DigestValue>
     </hash>
   </file>
   <file name="CodeBuilder.ico" size="67646">

@@ -327,14 +327,14 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "        string isNullId = Convert.ToString(model." +colNames[0]+ ");");
             sb.AppendLine(hasNamespace + "        if (isNullId.Equals(\"\") || isNullId.Equals(\"0\") || isNullId.Equals(new Guid().ToString()) || isNullId.Equals(null))");
             sb.AppendLine(hasNamespace + "        {");
-            sb.AppendLine(hasNamespace + "           obj = SqlHelper.ExecuteScalar(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ")\"");
+            sb.AppendLine(hasNamespace + "           obj = SqlHelper.ExecuteScalar(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ") SELECT @@IDENTITY AS Id ;\"");
             GetSqlParameter(dt, sb, hasNamespace, true);
             //    );
             sb.AppendLine(hasNamespace + "                );");
             sb.AppendLine(hasNamespace + "        }");
             sb.AppendLine(hasNamespace + "        else");
             sb.AppendLine(hasNamespace + "        {");
-            sb.AppendLine(hasNamespace + "           obj = SqlHelper.ExecuteScalar(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", colNamesTemp) + ") VALUES(@" + string.Join(", @", colNames) + ")\"");
+            sb.AppendLine(hasNamespace + "           obj = SqlHelper.ExecuteScalar(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", colNamesTemp) + ") VALUES(@" + string.Join(", @", colNames) + ") SELECT @@IDENTITY AS Id ;\"");
             GetSqlParameter(dt, sb, hasNamespace, false);
             //    );
             sb.AppendLine(hasNamespace + "                );");

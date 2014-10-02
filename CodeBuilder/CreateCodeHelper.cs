@@ -303,44 +303,45 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// 插入一条记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"model\">" + tableName + "类的对象</param>");
-            sb.AppendLine(hasNamespace + "    /// <returns>插入是否成功</returns>");
+            sb.AppendLine(hasNamespace + "    /// <returns>object 主键</returns>");
             //            public int Insert(Role model) {
-            sb.AppendLine(hasNamespace + "    public static bool Insert(" + tableName + " model) {");
+            sb.AppendLine(hasNamespace + "    public static object Insert(" + tableName + " model) {");
             //    SqlHelper.ExecuteNonQuery(
             //        "INSERT INTO Role(RoleID,RoleName,AdderID,AddIP,AddTime,ModifierID,ModifyIP,ModifyTime) VALUES (@RoleID,@RoleName,@AdderID,@AddIP,@AddTime,@ModifierID,@ModifyIP,@ModifyTime);SELECT @@identity"
             //                    public bool Insert(T_Users model)
             //        {
-            //            int count = 0;
+            //           object obj;
             //            string isNullId = Convert.ToString(model.Id);
             //            if (isNullId.Equals("") || isNullId.Equals("0") || isNullId.Equals(new Guid().ToString()) || isNullId.Equals(null))
             //            {
-            //                count = SqlHelper.ExecuteNonQuery(@"INSERT INTO T_Users( UserName, Password, RealName, Section, Status,
+            //                obj = SqlHelper.ExecuteScalar(@"INSERT INTO T_Users( UserName, Password, RealName, Section, Status,
             //            }
             //            else
             //            {
-            //                count = SqlHelper.ExecuteNonQuery(@"INSERT INTO T_Users(Id, UserName, Password, RealName, Section, 
+            //                obj = SqlHelper.ExecuteScalar(@"INSERT INTO T_Users(Id, UserName, Password, RealName, Section, 
             //            }
-            //            return count > 0;
+            //            return obj;
             //        }
-            sb.AppendLine(hasNamespace + "        int count =0;");
+
+            sb.AppendLine(hasNamespace + "        object obj;");
             sb.AppendLine(hasNamespace + "        string isNullId = Convert.ToString(model." +colNames[0]+ ");");
             sb.AppendLine(hasNamespace + "        if (isNullId.Equals(\"\") || isNullId.Equals(\"0\") || isNullId.Equals(new Guid().ToString()) || isNullId.Equals(null))");
             sb.AppendLine(hasNamespace + "        {");
-            sb.AppendLine(hasNamespace + "           count = SqlHelper.ExecuteNonQuery(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ")\"");
+            sb.AppendLine(hasNamespace + "           obj = SqlHelper.ExecuteScalar(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ")\"");
             GetSqlParameter(dt, sb, hasNamespace, true);
             //    );
             sb.AppendLine(hasNamespace + "                );");
             sb.AppendLine(hasNamespace + "        }");
             sb.AppendLine(hasNamespace + "        else");
             sb.AppendLine(hasNamespace + "        {");
-            sb.AppendLine(hasNamespace + "           count = SqlHelper.ExecuteNonQuery(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", colNamesTemp) + ") VALUES(@" + string.Join(", @", colNames) + ")\"");
+            sb.AppendLine(hasNamespace + "           obj = SqlHelper.ExecuteScalar(@\"INSERT INTO [" + tableName + "](" + string.Join(", ", colNamesTemp) + ") VALUES(@" + string.Join(", @", colNames) + ")\"");
             GetSqlParameter(dt, sb, hasNamespace, false);
             //    );
             sb.AppendLine(hasNamespace + "                );");
             sb.AppendLine(hasNamespace + "        }");
             //        ,new SqlParameter("@RoleID", model.RoleID)
 
-            sb.AppendLine(hasNamespace + "    return count > 0;");
+            sb.AppendLine(hasNamespace + "    return obj;");
             //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");

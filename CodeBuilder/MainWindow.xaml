@@ -19,11 +19,14 @@
                 <ColumnDefinition ></ColumnDefinition>
                 <ColumnDefinition ></ColumnDefinition>
                 <ColumnDefinition Width="20"></ColumnDefinition>
-                <ColumnDefinition  Width="60"></ColumnDefinition>
+                <ColumnDefinition  Width="90"></ColumnDefinition>
+                <ColumnDefinition Width="60"></ColumnDefinition>
                 <ColumnDefinition Width="20"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="1" Grid.ColumnSpan="2" Name="tbConnStr" KeyDown="tbConnStr_KeyDown"></TextBox>
-            <Button  Grid.Column="4"  Content="连接" Name="btnConnect" Click="btnConnect_Click" Height="20" IsDefault="True"/>
+            <ComboBox  Grid.Column="4" Margin="0,0,10,0" Name="sqlcom" GotFocus="sqlcom_GotFocus"></ComboBox>
+            <Button  Grid.Column="5"  Content="连接" Name="btnConnect" Click="btnConnect_Click" Height="20" IsDefault="True"/>
+            
         </Grid>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>

@@ -43,24 +43,29 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="CodeBuilder.exe" size="179200">
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="MySql.Data" version="6.9.5.0" publicKeyToken="C5687FC88969C44D" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="CodeBuilder.exe" size="195072">
       <assemblyIdentity name="CodeBuilder" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>E+g3+yFP8UEyBxBVuT8TmCD13AjptEzE20v4fgUCkbE=</dsig:DigestValue>
+        <dsig:DigestValue>FUpsGn+jLZGb+JTvGRf0JobdtAU0UBiWifa0K5uY9eE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="CodeBuilder.exe.config" size="11496">
+  <file name="CodeBuilder.exe.config" size="21198">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>WnSFJHhuxqDNKIEiBM3NJVT6g+YXzj/NvdjUOGgDzu8=</dsig:DigestValue>
+      <dsig:DigestValue>yzK7ciMFeuokE+yPUSrsrFwSdxPOPKtYhS9/mSF31ts=</dsig:DigestValue>
     </hash>
   </file>
   <file name="CodeBuilder.ico" size="67646">
@@ -70,6 +75,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>IVogHoqB/+ZOwUknpjU9SdDLqQOqc5uzRDrMWZB6RWg=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="MySql.Data.dll" size="457216">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>Hl8oqKVoHKoYBkB+RW44pglVNNEg+FMieB/chRgR6hQ=</dsig:DigestValue>
     </hash>
   </file>
 </asmv1:assembly>

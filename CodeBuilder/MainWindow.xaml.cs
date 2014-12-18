@@ -8,6 +8,7 @@ using System.Windows.Input;
 using CodeBuilder.Properties;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace CodeBuilder
 {
@@ -16,17 +17,49 @@ namespace CodeBuilder
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static int sqltype = 1;//数据库类型 1 sql server ；2 mysql
+        public static string leftStr = "["; //左定界符
+        public static string rightStr = "]";//右定界符
         public MainWindow()
         {
             InitializeComponent();
         }
         Settings settings = new Settings();
-
         static string modelstr;
         static string dalstr;
-
         private DataTable ExecuteDataTable(string sql)
         {
+            if(sqltype==2){
+                try
+                {
+                    using (MySqlConnection conn = new MySqlConnection(tbConnStr.Text))
+                    {
+                        conn.Open();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    tbModel.Text = "连接字符串填写错误，请检查。错误信息："+ex.Message;
+                    tbDAL.Text = ex.Message;
+                    ConnectSqlFailed();
+                    return null;
+                }
+                using (MySqlConnection conn = new MySqlConnection(tbConnStr.Text))
+                {
+                    conn.Open();
+                    using (MySqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = sql;
+                        DataSet ds = new DataSet();
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                        {
+                            adapter.FillSchema(ds, SchemaType.Source);
+                            adapter.Fill(ds);
+                            return ds.Tables[0];
+                        }
+                    }
+                }
+            }
             //如果连接字符串填错就报错
             try
             {
@@ -39,7 +72,6 @@ namespace CodeBuilder
                 ConnectSqlFailed();
                 return null;
             }
-
             using (SqlConnection conn = new SqlConnection(tbConnStr.Text))
             {
                 conn.Open();
@@ -69,10 +101,30 @@ namespace CodeBuilder
             cbDAL.Items.Add("GetById()");
             cbDAL.Items.Add("ListAll()");
             cbDAL.Items.Add("ListByWhere()");
+            cbDAL.Items.Add("ListByPage()");
+            sqlcom.Items.Add("SQL Server");
+            sqlcom.Items.Add("MySql");
+            sqlcom.SelectedIndex = 0;
         }
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
+            if (sqlcom.SelectedIndex == 0)
+            {
+                sqltype = 1;
+                leftStr = "[";
+                rightStr = "]";
+
+            }
+            else
+            {
+                sqltype = 2;
+                leftStr = "`";
+                rightStr = "`";
+            }
+            CreateCodeHelper.sqltype = sqltype;
+            CreateCodeHelper.leftStr = leftStr;
+            CreateCodeHelper.rightStr = rightStr;
             GetMainView();
         }
 
@@ -82,24 +134,23 @@ namespace CodeBuilder
             DataTable dt = null;
             try
             {
-                dt = ExecuteDataTable("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'");
+                string gettable = sqltype == 2 ? "SHOW TABLES" : "Select Name FROM SysObjects Where XType IN ('U','V')orDER BY Name";
+                dt = ExecuteDataTable(gettable);
             }
             catch (SqlException sqlex)
             {
                 ConnectSqlFailed();
                 tbModel.Text = "数据库连接出错，错误信息：";
                 tbDAL.Text = sqlex.Message;
-
                 return;
             }
             if (dt == null) return;
-
             //把获取到的表名填充到下拉框内
             string[] tables = new string[dt.Rows.Count];
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 DataRow row = dt.Rows[i];
-                tables[i] = (string)row["TABLE_NAME"];
+                tables[i] = (string)row[0];
             }
             cbTables.ItemsSource = tables;
             cbTables.SelectedIndex = 0;
@@ -148,7 +199,8 @@ namespace CodeBuilder
 
             else
             {
-                DataTable dt = ExecuteDataTable("select top 0 * from [" + tableName + "]");
+                string getfiled = sqltype == 2 ? "select * from `" + tableName + "` LIMIT 0" : "select top 0 * from [" + tableName + "]";
+                DataTable dt = ExecuteDataTable(getfiled);
                 CreateCodeHelper helper = new CreateCodeHelper();
                 string strDAL = cbDAL.SelectedItem.ToString();
                 StringBuilder sb = new StringBuilder();
@@ -207,6 +259,12 @@ namespace CodeBuilder
                                     dalstr = sb.ToString();
                                     break;
                                 }
+                            case "ListByPage()":
+                                {
+                                    helper.CreateListByPage(tableName, dt, sb, "");
+                                    dalstr = sb.ToString();
+                                    break;
+                                }
                             default:
                                 {
                                     dalstr = sb.ToString();
@@ -259,6 +317,12 @@ namespace CodeBuilder
                         case "ListByWhere()":
                             {
                                 helper.CreateListByWhere(tableName, sb, "");
+                                dalstr = sb.ToString();
+                                break;
+                            }
+                        case "ListByPage()":
+                            {
+                                helper.CreateListByPage(tableName, dt, sb, "");
                                 dalstr = sb.ToString();
                                 break;
                             }
@@ -347,14 +411,14 @@ namespace CodeBuilder
         /// </summary>
         private void ExportHelper()
         {
-
+            string helper = sqltype == 2 ? "MySql" : "Sql";
             string fileHelper = settings.strPath + "Helper" + Path.DirectorySeparatorChar;
             if (!Directory.Exists(fileHelper))
             {
                 Directory.CreateDirectory(fileHelper);
             }
-            File.WriteAllText(fileHelper + "SqlHelper.cs", settings.SqlHelper, Encoding.UTF8);
-            File.WriteAllText(fileHelper + "GenericSQLGenerator.cs", settings.GenericSQLGeneratorHelper, Encoding.UTF8);
+            File.WriteAllText(fileHelper + helper+"Helper.cs", sqltype == 2 ? settings .MySqlHelper: settings.SqlHelper, Encoding.UTF8);
+            File.WriteAllText(fileHelper + "GenericSQLGenerator.cs",sqltype == 2 ?settings.GenericMySQLGeneratorHelper: settings.GenericSQLGeneratorHelper, Encoding.UTF8);
         }
 
         private void tbNamespace_LostFocus(object sender, RoutedEventArgs e)
@@ -398,7 +462,6 @@ namespace CodeBuilder
                 }
             }
         }
-
         private void TextBox_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             System.Windows.Controls.TextBox tb = sender as System.Windows.Controls.TextBox;
@@ -449,7 +512,12 @@ namespace CodeBuilder
         }
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            System.Windows.MessageBox.Show("这是一个DotNet 代码生成器！\nPower by @QingWei-Li @GhostNener");
+            System.Windows.MessageBox.Show("这是一个DotNet 代码生成器！\nPower by  @Nener @QingWei-Li");
+        }
+
+        private void sqlcom_GotFocus(object sender, RoutedEventArgs e)
+        {
+            btnConnect.IsEnabled = true;
         }
     }
 }

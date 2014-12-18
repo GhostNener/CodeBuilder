@@ -48,14 +48,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="CodeBuilder.exe" size="195072">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="CodeBuilder.exe" size="194048">
       <assemblyIdentity name="CodeBuilder" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>FUpsGn+jLZGb+JTvGRf0JobdtAU0UBiWifa0K5uY9eE=</dsig:DigestValue>
+        <dsig:DigestValue>Nkoe4Pe5whW8jv3PhwyJh1LU3K5B1kFvvKGbDz55QOc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

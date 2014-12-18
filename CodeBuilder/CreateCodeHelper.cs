@@ -486,10 +486,10 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "        where = ls.ToArray();");
             sb.AppendLine(hasNamespace + "        if (num < 1 || page < 1) { return null; }");
             sb.AppendLine(hasNamespace + "        List<" + tableName + "> list = new List<" + tableName + ">();");
-            string pagetemp1 = sqltype == 2 ? "        if (where != null && where.Length > 0) { whereStr = \" and \" + string.Join(\" and \", where); }" : "        if (where != null && where.Length > 0) { whereStr = \" and b.\" + string.Join(\" and b.\", where); }";
+            string pagetemp1 = sqltype == 2 ? "        if (where != null && where.Length > 0) { whereStr = \" and \" + string.Join(\" and \", where); }" : "        if (where != null && where.Length > 0) { whereStr = \" and a.\" + string.Join(\" and a.\", where); }";
             sb.AppendLine(hasNamespace + pagetemp1);
             sb.AppendLine(hasNamespace + "        if (isDesc) { orderBy += \" desc\"; }");
-            string pagetemp2 = sqltype == 2 ? "        DataTable dt = MySqlHelper.ExecuteDataTable(string.Format(@\"SELECT * FROM " + leftStr + tableName + rightStr + " WHERE (1=1) {0} ORDER BY {1} ASC LIMIT {2}, {3};\" , whereStr,orderBy,  page * num - num + 1, page * num));" : "        DataTable dt = SqlHelper.ExecuteDataTable(string.Format(@\"SELECT b.* FROM ( SELECT  a.*, ROW_NUMBER () OVER (ORDER BY a.{0}) AS RowNumber FROM  " + leftStr + tableName + rightStr + " AS a ) AS b WHERE (1 = 1) {1}  AND RowNumber BETWEEN {2} AND {3} ORDER BY b.RowNumber\" , orderBy, whereStr, page * num - num + 1, page * num));";
+            string pagetemp2 = sqltype == 2 ? "        DataTable dt = MySqlHelper.ExecuteDataTable(string.Format(@\"SELECT * FROM " + leftStr + tableName + rightStr + " WHERE (1=1) {0} ORDER BY {1} ASC LIMIT {2}, {3};\" , whereStr,orderBy,  page * num - num + 1, page * num));" : "        DataTable dt = SqlHelper.ExecuteDataTable(string.Format(@\"SELECT b.* FROM ( SELECT  a.*, ROW_NUMBER () OVER (ORDER BY a.{0} ) AS RowNumber FROM  " + leftStr + tableName + rightStr + " AS a WHERE (1 = 1) {1}) AS b WHERE  RowNumber BETWEEN {2} AND {3} ORDER BY b.{0}\" , orderBy, whereStr, page * num - num + 1, page * num));";
             sb.AppendLine(hasNamespace + pagetemp2);
             sb.AppendLine(hasNamespace + "        foreach (DataRow row in dt.Rows) { list.Add(ToModel(row)); }");
             sb.AppendLine(hasNamespace + "        return list;");

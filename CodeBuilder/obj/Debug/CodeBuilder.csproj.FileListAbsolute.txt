@@ -97,3 +97,4 @@ C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.ex
 C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.application
 C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.exe
 C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.pdb
+C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.csprojResolveAssemblyReference.cache

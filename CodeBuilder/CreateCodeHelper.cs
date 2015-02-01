@@ -31,7 +31,7 @@ namespace CodeBuilder
             {
                 return column.DataType.ToString();
             }
-        } 
+        }
         #endregion
         #region GetDataTypeNameString 进行可空类型处理，String为空要特殊处理
         /// <summary>
@@ -50,7 +50,7 @@ namespace CodeBuilder
             {
                 return column.DataType.ToString();
             }
-        } 
+        }
         #endregion
         #region GetColumnNames 以数组形式返回列名
         /// <summary>
@@ -67,7 +67,7 @@ namespace CodeBuilder
                 colNames[i] = dataCol.ColumnName;
             }
             return colNames;
-        } 
+        }
         #endregion
         #region GetColumnNamesUpdate 以数组形式返回"列名=@列名"
         /// <summary>
@@ -84,7 +84,7 @@ namespace CodeBuilder
                 colNames[i - 1] = leftStr + dataCol.ColumnName + rightStr + "=@" + dataCol.ColumnName;
             }
             return colNames;
-        } 
+        }
         #endregion
         #region GetSqlParameter 得到 new SqlParameter
         /// <summary>
@@ -93,10 +93,10 @@ namespace CodeBuilder
         /// <param name="dt"></param>
         /// <param name="sb"></param>
         /// <param name="hasNamespace"></param>
-        private static void GetSqlParameter(DataTable dt, StringBuilder sb, string hasNamespace,bool isNullId)
+        private static void GetSqlParameter(DataTable dt, StringBuilder sb, string hasNamespace, bool isNullId)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
-            for (int i = 0; i < dt.Columns.Count;i++ )
+            for (int i = 0; i < dt.Columns.Count; i++)
             {
                 if (i == 0 && isNullId == true) { continue; }
                 if (GetDataTypeNameString(dt.Columns[i]).IndexOf("?") > 0)
@@ -108,7 +108,7 @@ namespace CodeBuilder
                     sb.AppendLine(hasNamespace + "                    ,new " + helper + "Parameter(\"@" + dt.Columns[i].ColumnName + "\", model." + dt.Columns[i].ColumnName + ")");
                 }
             }
-        }  
+        }
         #endregion
         #region CreateModelCode 生成Model带命名空间
         /// <summary>
@@ -130,7 +130,7 @@ namespace CodeBuilder
             sb.AppendLine("    }");
             sb.AppendLine("}");
             return sb;
-        } 
+        }
         #endregion
         #region CreateModelCode 生成Model不带命名空间
         /// <summary>
@@ -150,7 +150,7 @@ namespace CodeBuilder
             }
             sb.AppendLine("}");
             return sb;
-        } 
+        }
         #endregion
         #region CreateDALCode 生成DAL不带命名空间
         /// <summary>
@@ -175,7 +175,7 @@ namespace CodeBuilder
             CreateListByPage(tableName, dt, sb, "");
             sb.AppendLine("}");//tableNameDAL
             return sb;
-        } 
+        }
         #endregion
         #region CreateDALCode 生成DAL带命名空间
         /// <summary>
@@ -209,7 +209,7 @@ namespace CodeBuilder
             sb.AppendLine("    }");//tableNameDAL
             sb.AppendLine("}");
             return sb;
-        } 
+        }
         #endregion
         #region CreateToModel 生成ToModel
         /// <summary>
@@ -242,7 +242,7 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "        return model;");
             sb.AppendLine(hasNamespace + "    }");//ToModel
             sb.AppendLine("");
-        } 
+        }
         #endregion
         #region CreateListAll 生成ListAll
 
@@ -270,7 +270,7 @@ namespace CodeBuilder
             {
                 colNames[i] = leftStr + colNames[i] + rightStr;
             }
-            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM "+leftStr + tableName + rightStr+"\");");
+            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + "\");");
             //    foreach (DataRow row in dt.Rows)  {
             sb.AppendLine(hasNamespace + "        foreach (DataRow row in dt.Rows)  {");
             //        list.Add(ToModel(row));
@@ -282,7 +282,7 @@ namespace CodeBuilder
             //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
-        } 
+        }
         #endregion
         #region CreateInsert生成Insert
         /// <summary>
@@ -297,14 +297,15 @@ namespace CodeBuilder
             string helper = sqltype == 2 ? "MySql" : "Sql";
             string[] colNames = GetColumnNames(dt);
             string[] colNamesTemp = new string[colNames.Length];
-            string[] nullIdNames = new string[colNames.Length-1];
+            string[] nullIdNames = new string[colNames.Length - 1];
             string[] nullIdNamesTemp = new string[colNames.Length - 1];
             for (int i = 0; i < colNamesTemp.Length; i++)
             {
                 colNamesTemp[i] = leftStr + colNames[i] + rightStr;
-                if(i>=1){
-                    nullIdNames[i-1] = colNames[i];
-                    nullIdNamesTemp[i-1] = leftStr + colNames[i] + rightStr;
+                if (i >= 1)
+                {
+                    nullIdNames[i - 1] = colNames[i];
+                    nullIdNamesTemp[i - 1] = leftStr + colNames[i] + rightStr;
                 }
             }
             sb.AppendLine(hasNamespace + "    /// <summary>");
@@ -332,10 +333,10 @@ namespace CodeBuilder
             //        }
 
             sb.AppendLine(hasNamespace + "        object obj;");
-            sb.AppendLine(hasNamespace + "        string isNullId = Convert.ToString(model." +colNames[0]+ ");");
+            sb.AppendLine(hasNamespace + "        string isNullId = Convert.ToString(model." + colNames[0] + ");");
             sb.AppendLine(hasNamespace + "        if (isNullId.Equals(\"\") || isNullId.Equals(\"0\") || isNullId.Equals(new Guid().ToString()) || isNullId.Equals(null))");
             sb.AppendLine(hasNamespace + "        {");
-            sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO "+leftStr + tableName + rightStr+"(" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ") SELECT @@IDENTITY AS Id ;\"");
+            sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO " + leftStr + tableName + rightStr + "(" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ") SELECT @@IDENTITY AS Id ;\"");
             GetSqlParameter(dt, sb, hasNamespace, true);
             //    );
             sb.AppendLine(hasNamespace + "                );");
@@ -353,7 +354,7 @@ namespace CodeBuilder
             //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
-        } 
+        }
         #endregion
         #region CreateUpdate 生成Update
         /// <summary>
@@ -375,14 +376,14 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    public static bool Update(" + tableName + " model) {");
             //    Helper.SqlHelper.ExecuteNonQuery("update T_Operators set UserName=@UserName, RealName=@RealName, Password=@Password where Id=@Id", new SqlParameter("@UserName", userName), new SqlParameter("@RealName", realName), new SqlParameter("@Password", password), new SqlParameter("@Id", id));
 
-            sb.AppendLine(hasNamespace + "        int count = " + helper + "Helper.ExecuteNonQuery(\"UPDATE "+leftStr + tableName + rightStr+" SET " + string.Join(", ", GetColumnNamesUpdate(dt)) + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\"");
-            GetSqlParameter(dt, sb, hasNamespace,false);
+            sb.AppendLine(hasNamespace + "        int count = " + helper + "Helper.ExecuteNonQuery(\"UPDATE " + leftStr + tableName + rightStr + " SET " + string.Join(", ", GetColumnNamesUpdate(dt)) + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\"");
+            GetSqlParameter(dt, sb, hasNamespace, false);
             sb.AppendLine(hasNamespace + "        );");
             sb.AppendLine(hasNamespace + "    return count > 0;");
             //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
-        } 
+        }
         #endregion
         #region CreateGetById 生成GetById
         /// <summary>
@@ -408,7 +409,7 @@ namespace CodeBuilder
             {
                 colNames[i] = leftStr + colNames[i] + rightStr;
             }
-            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM "+leftStr + tableName + rightStr+" WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
+            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
             //    if (dt.Rows.Count > 1) {
             sb.AppendLine(hasNamespace + "        if (dt.Rows.Count > 1) {");
             //        throw new Exception("more than 1 row was found");
@@ -430,7 +431,7 @@ namespace CodeBuilder
             //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
-        } 
+        }
         #endregion
         #region CreateDeleteById 生成DeleteById
         /// <summary>
@@ -451,13 +452,13 @@ namespace CodeBuilder
             //            public bool Delete(int id)
             sb.AppendLine(hasNamespace + "    public static bool DeleteById(" + dt.Columns[0].DataType + " " + dt.Columns[0].ColumnName + ") {");
             //    int rows = SqlHelper.ExecuteNonQuery("DELETE FROM Role WHERE ID = @id", new SqlParameter("@id", id));
-            sb.AppendLine(hasNamespace + "        int rows = " + helper + "Helper.ExecuteNonQuery(\"DELETE FROM "+leftStr + tableName + rightStr+" WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + " = @" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
+            sb.AppendLine(hasNamespace + "        int rows = " + helper + "Helper.ExecuteNonQuery(\"DELETE FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + " = @" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
             //    return rows > 0;
             sb.AppendLine(hasNamespace + "        return rows > 0;");
             //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -476,17 +477,17 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// <param name=\"num\">每页个数（从1开始计数）</param>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"orderBy\">排序条件</param>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"isDesc\">是否降序</param>");
-            sb.AppendLine(hasNamespace + "    /// <param name=\"where\">查询条件</param>");
+            sb.AppendLine(hasNamespace + "    /// <param name=\"whereArr\">查询条件：例如ID=1,NAME='ADMIN'</param>");
             sb.AppendLine(hasNamespace + "    /// <returns></returns>");
-            sb.AppendLine(hasNamespace + "    public static IEnumerable<" + tableName + "> ListByPage(int page = 1, int num = 10, string orderBy = \"" + dt.Columns[0].ColumnName + "\", bool isDesc = true, params string[] where)");
+            sb.AppendLine(hasNamespace + "    public static IEnumerable<" + tableName + "> ListByPage(int page = 1, int num = 10, string orderBy = \"" + dt.Columns[0].ColumnName + "\", bool isDesc = true, params string[] whereArr)");
             sb.AppendLine(hasNamespace + "    {");
             sb.AppendLine(hasNamespace + "        string whereStr = \"\";");
             sb.AppendLine(hasNamespace + "        List<string> ls = new List<string>();");
-            sb.AppendLine(hasNamespace + "        foreach (var v in where) { if (v != null && v != \"\") { ls.Add(v); } }");
-            sb.AppendLine(hasNamespace + "        where = ls.ToArray();");
+            sb.AppendLine(hasNamespace + "        foreach (var v in whereArr) { if (v != null && v != \"\") { ls.Add(v); } }");
+            sb.AppendLine(hasNamespace + "        whereArr = ls.ToArray();");
             sb.AppendLine(hasNamespace + "        if (num < 1 || page < 1) { return null; }");
             sb.AppendLine(hasNamespace + "        List<" + tableName + "> list = new List<" + tableName + ">();");
-            string pagetemp1 = sqltype == 2 ? "        if (where != null && where.Length > 0) { whereStr = \" and \" + string.Join(\" and \", where); }" : "        if (where != null && where.Length > 0) { whereStr = \" and a.\" + string.Join(\" and a.\", where); }";
+            string pagetemp1 = sqltype == 2 ? "        if (whereArr != null && whereArr.Length > 0) { whereStr = \" and \" + string.Join(\" and \", whereArr); }" : "        if (where != null && where.Length > 0) { whereStr = \" and a.\" + string.Join(\" and a.\", where); }";
             sb.AppendLine(hasNamespace + pagetemp1);
             sb.AppendLine(hasNamespace + "        if (isDesc) { orderBy += \" desc\"; }");
             string pagetemp2 = sqltype == 2 ? "        DataTable dt = MySqlHelper.ExecuteDataTable(string.Format(@\"SELECT * FROM " + leftStr + tableName + rightStr + " WHERE (1=1) {0} ORDER BY {1} ASC LIMIT {2}, {3};\" , whereStr,orderBy,  ((page -1)* num), num));" : "        DataTable dt = SqlHelper.ExecuteDataTable(string.Format(@\"SELECT b.* FROM ( SELECT  a.*, ROW_NUMBER () OVER (ORDER BY a.{0} ) AS RowNumber FROM  " + leftStr + tableName + rightStr + " AS a WHERE (1 = 1) {1}) AS b WHERE  RowNumber BETWEEN {2} AND {3} ORDER BY b.{0}\" , orderBy, whereStr, ((page-1) * num + 1), page * num));";
@@ -520,7 +521,7 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// 通过条件获得满足条件的记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"model\">" + tableName + "类的对象</param>");
-            sb.AppendLine(hasNamespace + "    /// <param name=\"whereStr\">其他的sql 语句 若果是where只需要“and...  就行了” </param>");
+            sb.AppendLine(hasNamespace + "    /// <param name=\"whereStr\">其他的sql 语句  </param>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"fields\">需要的条件的字段名</param>");
             sb.AppendLine(hasNamespace + "    /// <returns>满足条件的记录</returns>");
             sb.AppendLine(hasNamespace + "     public static IEnumerable<" + tableName + "> ListByWhere(" + tableName + " model,string whereStr, params string[] fields)");
@@ -528,7 +529,7 @@ namespace CodeBuilder
             string sqlpar = sqltype == 2 ? "MySqlParameter" : "SqlParameter";
             sb.AppendLine(hasNamespace + "         List<" + sqlpar + "> lsParameter = new List<" + sqlpar + ">();");
             sb.AppendLine(hasNamespace + "         string str = Helper.GenericSQLGenerator.GetWhereStr<" + tableName + ">(model, \"" + tableName + "\", out lsParameter, fields);");
-            sb.AppendLine(hasNamespace + "         str+=whereStr;");
+            sb.AppendLine(hasNamespace + "         if(whereStr!=null&&whereStr.Trim().Length>0){str=str+\" and \"+whereStr;}");
             sb.AppendLine(hasNamespace + "         List<" + tableName + "> list = new List<" + tableName + ">();");
             sb.AppendLine(hasNamespace + "         " + sqlpar + "[] sqlparm = new " + sqlpar + "[lsParameter.Count];");
             sb.AppendLine(hasNamespace + "         for (int i = 0; i < lsParameter.Count; i++)");
@@ -544,7 +545,7 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "         return list;");
             sb.AppendLine(hasNamespace + "     }");
             sb.AppendLine("");
-        } 
+        }
         #endregion
     }
 }

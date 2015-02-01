@@ -8,20 +8,20 @@
         <beforeApplicationStartup />
       </update>
     </subscription>
-    <deploymentProvider codebase="http://nener-pc:10086/CodeBuilder.application" />
+    <deploymentProvider codebase="http://pc201501061759:10086/CodeBuilder.application" />
   </deployment>
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="CodeBuilder.exe.manifest" size="4612">
+    <dependentAssembly dependencyType="install" codebase="CodeBuilder.exe.manifest" size="4998">
       <assemblyIdentity name="CodeBuilder.exe" version="1.0.0.2" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>MCmKmRuKhSPq0fw/mz+DGjkV66SKdMkCmmH3MPKXPO8=</dsig:DigestValue>
+        <dsig:DigestValue>8ln9z4VG71/fen89srzED+ewLHPPVjtM8eBdF+s8wO4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

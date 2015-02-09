@@ -164,16 +164,21 @@ namespace CodeBuilder
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("public static class  " + tableName + "DAL {");
             sb.AppendLine("");
-            CreateToModel(tableName, dt, sb, "");
-            CreateInsert(tableName, dt, sb, "");
-            CreateDeleteById(tableName, dt, sb, "");
-            CreateUpdate(tableName, dt, sb, "");
-            CreateGetById(tableName, dt, sb, "");
-            CreateListAll(tableName, dt, sb, "");
-            CreateListByWhere(tableName, sb, "");
-            CreateListByPage(tableName, dt, sb, "");
+            GetAllDAL(tableName, dt, sb,"");
             sb.AppendLine("}");//tableNameDAL
             return sb;
+        }
+
+        private void GetAllDAL(string tableName, DataTable dt, StringBuilder sb,string otherStr="")
+        {
+            CreateToModel(tableName, dt, sb, otherStr);
+            CreateInsert(tableName, dt, sb, otherStr);
+            CreateDeleteById(tableName, dt, sb, otherStr);
+            CreateUpdate(tableName, dt, sb, otherStr);
+            CreateGetById(tableName, dt, sb, otherStr);
+            CreateListAll(tableName, dt, sb, otherStr);
+            CreateListByWhere(tableName, sb, otherStr);
+            CreateListByPage(tableName, dt, sb, otherStr);
         }
         #endregion
         #region CreateDALCode 生成DAL带命名空间
@@ -197,13 +202,7 @@ namespace CodeBuilder
             sb.AppendLine("namespace " + strNamespace + " {");
             sb.AppendLine("    public static class  " + tableName + "DAL {");
             sb.AppendLine("");
-            CreateToModel(tableName, dt, sb, "    ");
-            CreateInsert(tableName, dt, sb, "    ");
-            CreateDeleteById(tableName, dt, sb, "    ");
-            CreateUpdate(tableName, dt, sb, "    ");
-            CreateGetById(tableName, dt, sb, "    ");
-            CreateListAll(tableName, dt, sb, "    ");
-            CreateListByWhere(tableName, sb, "  ");
+            GetAllDAL(tableName, dt, sb, "    ");
             sb.AppendLine("    }");//tableNameDAL
             sb.AppendLine("}");
             return sb;

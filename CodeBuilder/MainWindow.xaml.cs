@@ -25,8 +25,8 @@ namespace CodeBuilder
         string cononstr = "";//链接字符串
         bool isRun = false;
         Settings settings = new Settings();
-        static string modelstr;
-        static string dalstr;
+        StringBuilder modelstr=new StringBuilder ();
+        StringBuilder dalstr=new StringBuilder();
         public MainWindow()
         {
             InitializeComponent();
@@ -240,11 +240,11 @@ namespace CodeBuilder
                 StringBuilder sb = new StringBuilder();
                 if (!tbNamespace.Text.Equals("命名空间") && tbNamespace.Text.Trim().Length > 0)
                 {
-                    modelstr = helper.CreateModelCode(tableName, dt, tbNamespace.Text).ToString();
+                    modelstr = helper.CreateModelCode(tableName, dt, tbNamespace.Text);
                     if (strDAL.Equals("All DAL"))
                     {
-                        dalstr = helper.CreateDALCode(tableName, dt, tbNamespace.Text).ToString();
-                        tbDAL.Text = dalstr;
+                        dalstr = helper.CreateDALCode(tableName, dt, tbNamespace.Text);
+                        tbDAL.Text = dalstr.ToString();
                     }
                     else
                     {
@@ -253,11 +253,11 @@ namespace CodeBuilder
                 }
                 else
                 {
-                    modelstr = helper.CreateModelCode(tableName, dt).ToString();
+                    modelstr = helper.CreateModelCode(tableName, dt);
                     GetCode(tableName);
                 }
-                tbDAL.Text = dalstr;
-                tbModel.Text = modelstr;
+                tbDAL.Text = dalstr.ToString();
+                tbModel.Text = modelstr.ToString();
             }
             btnExport.IsEnabled = true;
             btnGenerateCode.IsDefault = false;
@@ -274,54 +274,54 @@ namespace CodeBuilder
             {
                 case "All DAL":
                     {
-                        dalstr = helper.CreateDALCode(tableName, dt).ToString();
+                        dalstr = helper.CreateDALCode(tableName, dt);
                         break;
                     }
                 case "ListAll()":
                     {
                         helper.CreateListAll(tableName, dt, sb, "");
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
                 case "DeleteById()":
                     {
                         helper.CreateDeleteById(tableName, dt, sb, "");
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
                 case "GetById()":
                     {
                         helper.CreateGetById(tableName, dt, sb, "");
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
                 case "Insert()":
                     {
                         helper.CreateInsert(tableName, dt, sb, "");
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
                 case "Update()":
                     {
                         helper.CreateUpdate(tableName, dt, sb, "");
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
                 case "ListByWhere()":
                     {
                         helper.CreateListByWhere(tableName, sb, "");
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
                 case "ListByPage()":
                     {
                         helper.CreateListByPage(tableName, dt, sb, "");
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
                 default:
                     {
-                        dalstr = sb.ToString();
+                        dalstr = sb;
                         break;
                     }
             }
@@ -385,9 +385,9 @@ namespace CodeBuilder
             }
             fileDAL += tablename + "DAL.cs";
             fileModel += tablename + "Model.cs";
-            File.WriteAllText(fileModel, modelstr, Encoding.UTF8);
+            File.WriteAllText(fileModel, modelstr.ToString(), Encoding.UTF8);
             tbModel.Text = "保存Model完成\n路径：" + fileModel + "\n----------------------------------------\n\n" + tbModel.Text;
-            File.WriteAllText(fileDAL, dalstr, Encoding.UTF8);
+            File.WriteAllText(fileDAL, dalstr.ToString(), Encoding.UTF8);
             tbDAL.Text = "保存Model完成\n路径：" + fileDAL + "\n----------------------------------------\n\n" + tbDAL.Text;
 
         }

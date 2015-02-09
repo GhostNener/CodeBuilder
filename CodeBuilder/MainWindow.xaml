@@ -5,9 +5,9 @@
     <Grid Margin="0,0,0,-9">
         <Grid.RowDefinitions>
             <RowDefinition Height="20" ></RowDefinition>
+            <RowDefinition Height="24" ></RowDefinition>
             <RowDefinition Height="20" ></RowDefinition>
-            <RowDefinition Height="20" ></RowDefinition>
-            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="24"></RowDefinition>
             <RowDefinition Height="20" ></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
@@ -19,20 +19,20 @@
                 <ColumnDefinition ></ColumnDefinition>
                 <ColumnDefinition ></ColumnDefinition>
                 <ColumnDefinition Width="20"></ColumnDefinition>
-                <ColumnDefinition  Width="90"></ColumnDefinition>
+                <ColumnDefinition  Width="100"></ColumnDefinition>
                 <ColumnDefinition Width="60"></ColumnDefinition>
                 <ColumnDefinition Width="20"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="1" Grid.ColumnSpan="2" Name="tbConnStr" KeyDown="tbConnStr_KeyDown"></TextBox>
             <ComboBox  Grid.Column="4" Margin="0,0,10,0" Name="sqlcom" GotFocus="sqlcom_GotFocus"></ComboBox>
-            <Button  Grid.Column="5"  Content="连接" Name="btnConnect" Click="btnConnect_Click" Height="20" IsDefault="True"/>
+            <Button  Grid.Column="5"  Content="连接" Name="btnConnect" Click="btnConnect_Click"  IsDefault="True"/>
             
         </Grid>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="138"></ColumnDefinition>
                 <ColumnDefinition Width="100"></ColumnDefinition>
                 <ColumnDefinition Width="60"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>

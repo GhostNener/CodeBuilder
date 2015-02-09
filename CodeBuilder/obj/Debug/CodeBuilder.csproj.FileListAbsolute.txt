@@ -104,7 +104,6 @@ D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\CodeBuilder.application
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\CodeBuilder.exe
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\CodeBuilder.pdb
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\MySql.Data.dll
-D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.csprojResolveAssemblyReference.cache
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\MainWindow.baml
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\MainWindow.g.cs
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\App.g.cs

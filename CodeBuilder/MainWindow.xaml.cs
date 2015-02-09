@@ -9,6 +9,7 @@ using CodeBuilder.Properties;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using System.Threading;
 
 namespace CodeBuilder
 {
@@ -20,75 +21,82 @@ namespace CodeBuilder
         public static int sqltype = 1;//数据库类型 1 sql server ；2 mysql
         public static string leftStr = "["; //左定界符
         public static string rightStr = "]";//右定界符
+        delegate void HandelDelegate();//委托
+        string cononstr = "";//链接字符串
+        bool isRun = false;
+        Settings settings = new Settings();
+        static string modelstr;
+        static string dalstr;
         public MainWindow()
         {
             InitializeComponent();
         }
-        Settings settings = new Settings();
-        static string modelstr;
-        static string dalstr;
+        /// <summary>
+        /// 执行sql返回dataable
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         private DataTable ExecuteDataTable(string sql)
         {
-            if(sqltype==2){
-                try
-                {
-                    using (MySqlConnection conn = new MySqlConnection(tbConnStr.Text))
-                    {
-                        conn.Open();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    tbModel.Text = "连接字符串填写错误，请检查。错误信息："+ex.Message;
-                    tbDAL.Text = ex.Message;
-                    ConnectSqlFailed();
-                    return null;
-                }
-                using (MySqlConnection conn = new MySqlConnection(tbConnStr.Text))
-                {
-                    conn.Open();
-                    using (MySqlCommand cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = sql;
-                        DataSet ds = new DataSet();
-                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
-                        {
-                            adapter.FillSchema(ds, SchemaType.Source);
-                            adapter.Fill(ds);
-                            return ds.Tables[0];
-                        }
-                    }
-                }
-            }
-            //如果连接字符串填错就报错
+            DataSet ds = new DataSet();
             try
             {
-                using (new SqlConnection(tbConnStr.Text)) { }
+                switch (sqltype)
+                {
+                    case 1:
+                        using (SqlConnection conn = new SqlConnection(cononstr))
+                        {
+                            conn.Open();
+                            using (SqlCommand cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandText = sql;
+                                using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                                {
+                                    adapter.FillSchema(ds, SchemaType.Source);
+                                    adapter.Fill(ds);
+                                }
+                            }
+                        }
+                        break;
+                    case 2:
+                        using (MySqlConnection conn = new MySqlConnection(cononstr))
+                        {
+                            conn.Open();
+                            using (MySqlCommand cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandText = sql;
+                                using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                                {
+                                    adapter.FillSchema(ds, SchemaType.Source);
+                                    adapter.Fill(ds);
+                                }
+                            }
+                        }
+                        break;
+                    default: break;
+                }
+                return ds.Tables[0];
             }
             catch (Exception ex)
             {
-                tbModel.Text = "连接字符串填写错误，请检查。错误信息：";
-                tbDAL.Text = ex.Message;
+                this.Dispatcher.Invoke(delegate
+                {
+                    tbModel.Text = "连接字符串填写错误，请检查。\n错误信息：" + ex.Message + "\n" + ex.ToString();
+                    tbDAL.Text = ex.Message + "\n" + ex.ToString();
+                });
                 ConnectSqlFailed();
                 return null;
             }
-            using (SqlConnection conn = new SqlConnection(tbConnStr.Text))
+            finally
             {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = sql;
-                    DataSet ds = new DataSet();
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
-                    {
-                        adapter.FillSchema(ds, SchemaType.Source);
-                        adapter.Fill(ds);
-                        return ds.Tables[0];
-                    }
-                }
+                this.Dispatcher.Invoke(delegate { btnConnect.IsEnabled = true; tbConnStr.IsEnabled = true; });
             }
         }
-
+        /// <summary>
+        /// 装载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             tbConnStr.Text = settings.strConn;
@@ -106,9 +114,18 @@ namespace CodeBuilder
             sqlcom.Items.Add("MySql");
             sqlcom.SelectedIndex = 0;
         }
-
+        /// <summary>
+        /// 链接点击事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
+            if (isRun)
+            {
+                System.Windows.MessageBox.Show("正在执行其他操作，请等待其完成后再操作！");
+                return;
+            }
             if (sqlcom.SelectedIndex == 0)
             {
                 sqltype = 1;
@@ -125,70 +142,84 @@ namespace CodeBuilder
             CreateCodeHelper.sqltype = sqltype;
             CreateCodeHelper.leftStr = leftStr;
             CreateCodeHelper.rightStr = rightStr;
-            GetMainView();
+            cononstr = tbConnStr.Text;
+            Thread th = new Thread(new ThreadStart(new HandelDelegate(GetMainView)));
+            th.IsBackground = true;
+            th.Start();
         }
 
         private void GetMainView()
         {
+            isRun = true;
+            this.Dispatcher.Invoke(delegate
+            {
+                tbConnStr.IsEnabled = false;
+                btnConnect.IsEnabled = false;
+                tbModel.Text = tbDAL.Text = "连接中...";
+            });
             //获取数据库的所有表的表名
             DataTable dt = null;
             try
             {
                 string gettable = sqltype == 2 ? "SHOW TABLES" : "Select Name FROM SysObjects Where XType IN ('U','V')orDER BY Name";
                 dt = ExecuteDataTable(gettable);
+                if (dt == null) return;
+                //把获取到的表名填充到下拉框内
+                string[] tables = new string[dt.Rows.Count];
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    DataRow row = dt.Rows[i];
+                    tables[i] = (string)row[0];
+                }
+                this.Dispatcher.Invoke(delegate
+                {
+                    cbTables.ItemsSource = tables;
+                    cbTables.SelectedIndex = 0;
+                    cbDAL.SelectedIndex = 0;
+                    cbTables.IsEnabled = true;
+                    cbDAL.IsEnabled = true;
+                    btnGenerateCode.IsEnabled = true;
+                    btnConnect.IsEnabled = false;
+                    btnGenerateCode.IsDefault = true;
+                    btnExportALL.IsEnabled = true;
+                    tbModel.Text = "数据库连接成功\n\n----------------------------------------\n双击复制Model";
+                    tbDAL.Text = "数据库连接成功\n\n----------------------------------------\n双击复制DAL";
+                    settings.strConn = tbConnStr.Text;
+                    settings.strNamespace = tbNamespace.Text;
+                    settings.Save();
+                });
             }
-            catch (SqlException sqlex)
+            finally
             {
-                ConnectSqlFailed();
-                tbModel.Text = "数据库连接出错，错误信息：";
-                tbDAL.Text = sqlex.Message;
-                return;
+                this.Dispatcher.Invoke(delegate { btnConnect.IsEnabled = true; tbConnStr.IsEnabled = true; });
+                isRun = false;
             }
-            if (dt == null) return;
-            //把获取到的表名填充到下拉框内
-            string[] tables = new string[dt.Rows.Count];
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                DataRow row = dt.Rows[i];
-                tables[i] = (string)row[0];
-            }
-            cbTables.ItemsSource = tables;
-            cbTables.SelectedIndex = 0;
-            cbDAL.SelectedIndex = 0;
-            cbTables.IsEnabled = true;
-            cbDAL.IsEnabled = true;
-            btnGenerateCode.IsEnabled = true;
-            btnConnect.IsEnabled = false;
-            //tbConnStr.IsReadOnly = true;
-            btnGenerateCode.IsDefault = true;
-            btnExportALL.IsEnabled = true;
-            tbModel.Text = "数据库连接成功\n\n----------------------------------------\n双击复制Model";
-            tbDAL.Text = "数据库连接成功\n\n----------------------------------------\n双击复制DAL";
-            //保存用户更新的信息
-            settings.strConn = tbConnStr.Text;
-            settings.strNamespace = tbNamespace.Text;
-            settings.Save();
-        }
 
+        }
+        /// <summary>
+        /// 链接失败处理
+        /// </summary>
         private void ConnectSqlFailed()
         {
-            btnExport.IsEnabled = false;
-            btnExportALL.IsEnabled = false;
-            btnGenerateCode.IsEnabled = false;
-            cbTables.ItemsSource = null;
-            cbTables.IsEnabled = false;
-            cbDAL.ItemsSource = null;
-            cbDAL.IsEnabled = false;
-            cbDAL.SelectedIndex = -1;
-            tbConnStr.Focus();
+            this.Dispatcher.Invoke(delegate
+            {
+                btnExport.IsEnabled = false;
+                btnExportALL.IsEnabled = false;
+                btnGenerateCode.IsEnabled = false;
+                cbTables.IsEnabled = false; cbTables.ItemsSource = null;
+                cbTables.IsEnabled = false; cbTables.ItemsSource = null; cbDAL.SelectedIndex = -1;
+                tbConnStr.Focus();
+            });
         }
-
         private void btnGenerateCode_Click(object sender, RoutedEventArgs e)
         {
             string tableName = (string)cbTables.SelectedItem;
             CreateCode(tableName);
         }
-
+        /// <summary>
+        /// 生成代码
+        /// </summary>
+        /// <param name="tableName"></param>
         private void CreateCode(string tableName)
         {
             if (tableName == null)
@@ -196,19 +227,20 @@ namespace CodeBuilder
                 tbDAL.Text = tbModel.Text = "请选择要生成的表";
                 return;
             }
-
             else
             {
                 string getfiled = sqltype == 2 ? "select * from `" + tableName + "` LIMIT 0" : "select top 0 * from [" + tableName + "]";
                 DataTable dt = ExecuteDataTable(getfiled);
                 CreateCodeHelper helper = new CreateCodeHelper();
-                string strDAL = cbDAL.SelectedItem.ToString();
+                string strDAL = "";
+                this.Dispatcher.Invoke(delegate
+                {
+                    strDAL = cbDAL.SelectedItem.ToString();
+                });
                 StringBuilder sb = new StringBuilder();
-
                 if (!tbNamespace.Text.Equals("命名空间") && tbNamespace.Text.Trim().Length > 0)
                 {
                     modelstr = helper.CreateModelCode(tableName, dt, tbNamespace.Text).ToString();
-
                     if (strDAL.Equals("All DAL"))
                     {
                         dalstr = helper.CreateDALCode(tableName, dt, tbNamespace.Text).ToString();
@@ -216,130 +248,83 @@ namespace CodeBuilder
                     }
                     else
                     {
-                        switch (strDAL)
-                        {
-                            case "All DAL":
-                                {
-                                    dalstr = helper.CreateDALCode(tableName, dt).ToString();
-                                    break;
-                                }
-                            case "ListAll()":
-                                {
-                                    helper.CreateListAll(tableName, dt, sb, "");
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                            case "DeleteById()":
-                                {
-                                    helper.CreateDeleteById(tableName, dt, sb, "");
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                            case "GetById()":
-                                {
-                                    helper.CreateGetById(tableName, dt, sb, "");
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                            case "Insert()":
-                                {
-                                    helper.CreateInsert(tableName, dt, sb, "");
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                            case "Update()":
-                                {
-                                    helper.CreateUpdate(tableName, dt, sb, "");
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                            case "ListByWhere()":
-                                {
-                                    helper.CreateListByWhere(tableName, sb, "");
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                            case "ListByPage()":
-                                {
-                                    helper.CreateListByPage(tableName, dt, sb, "");
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                            default:
-                                {
-                                    dalstr = sb.ToString();
-                                    break;
-                                }
-                        }
+                        GetCode(tableName);
                     }
                 }
                 else
                 {
                     modelstr = helper.CreateModelCode(tableName, dt).ToString();
-
-                    switch (strDAL)
-                    {
-                        case "All DAL":
-                            {
-                                dalstr = helper.CreateDALCode(tableName, dt).ToString();
-                                break;
-                            }
-                        case "ListAll()":
-                            {
-                                helper.CreateListAll(tableName, dt, sb, "");
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                        case "DeleteById()":
-                            {
-                                helper.CreateDeleteById(tableName, dt, sb, "");
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                        case "GetById()":
-                            {
-                                helper.CreateGetById(tableName, dt, sb, "");
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                        case "Insert()":
-                            {
-                                helper.CreateInsert(tableName, dt, sb, "");
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                        case "Update()":
-                            {
-                                helper.CreateUpdate(tableName, dt, sb, "");
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                        case "ListByWhere()":
-                            {
-                                helper.CreateListByWhere(tableName, sb, "");
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                        case "ListByPage()":
-                            {
-                                helper.CreateListByPage(tableName, dt, sb, "");
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                        default:
-                            {
-                                dalstr = sb.ToString();
-                                break;
-                            }
-                    }
-                    tbDAL.Text = dalstr;
-                    tbModel.Text = modelstr;
+                    GetCode(tableName);
                 }
                 tbDAL.Text = dalstr;
                 tbModel.Text = modelstr;
             }
             btnExport.IsEnabled = true;
             btnGenerateCode.IsDefault = false;
+        }
+
+        private void GetCode(string tableName)
+        {
+            string getfiled = sqltype == 2 ? "select * from `" + tableName + "` LIMIT 0" : "select top 0 * from [" + tableName + "]";
+            DataTable dt = ExecuteDataTable(getfiled);
+            CreateCodeHelper helper = new CreateCodeHelper();
+            string strDAL = cbDAL.SelectedItem.ToString();
+            StringBuilder sb = new StringBuilder();
+            switch (strDAL)
+            {
+                case "All DAL":
+                    {
+                        dalstr = helper.CreateDALCode(tableName, dt).ToString();
+                        break;
+                    }
+                case "ListAll()":
+                    {
+                        helper.CreateListAll(tableName, dt, sb, "");
+                        dalstr = sb.ToString();
+                        break;
+                    }
+                case "DeleteById()":
+                    {
+                        helper.CreateDeleteById(tableName, dt, sb, "");
+                        dalstr = sb.ToString();
+                        break;
+                    }
+                case "GetById()":
+                    {
+                        helper.CreateGetById(tableName, dt, sb, "");
+                        dalstr = sb.ToString();
+                        break;
+                    }
+                case "Insert()":
+                    {
+                        helper.CreateInsert(tableName, dt, sb, "");
+                        dalstr = sb.ToString();
+                        break;
+                    }
+                case "Update()":
+                    {
+                        helper.CreateUpdate(tableName, dt, sb, "");
+                        dalstr = sb.ToString();
+                        break;
+                    }
+                case "ListByWhere()":
+                    {
+                        helper.CreateListByWhere(tableName, sb, "");
+                        dalstr = sb.ToString();
+                        break;
+                    }
+                case "ListByPage()":
+                    {
+                        helper.CreateListByPage(tableName, dt, sb, "");
+                        dalstr = sb.ToString();
+                        break;
+                    }
+                default:
+                    {
+                        dalstr = sb.ToString();
+                        break;
+                    }
+            }
         }
 
         private void btnCopyModel(object sender, RoutedEventArgs e)
@@ -417,8 +402,8 @@ namespace CodeBuilder
             {
                 Directory.CreateDirectory(fileHelper);
             }
-            File.WriteAllText(fileHelper + helper+"Helper.cs", sqltype == 2 ? settings .MySqlHelper: settings.SqlHelper, Encoding.UTF8);
-            File.WriteAllText(fileHelper + "GenericSQLGenerator.cs",sqltype == 2 ?settings.GenericMySQLGeneratorHelper: settings.GenericSQLGeneratorHelper, Encoding.UTF8);
+            File.WriteAllText(fileHelper + helper + "Helper.cs", sqltype == 2 ? settings.MySqlHelper : settings.SqlHelper, Encoding.UTF8);
+            File.WriteAllText(fileHelper + "GenericSQLGenerator.cs", sqltype == 2 ? settings.GenericMySQLGeneratorHelper : settings.GenericSQLGeneratorHelper, Encoding.UTF8);
         }
 
         private void tbNamespace_LostFocus(object sender, RoutedEventArgs e)
@@ -480,26 +465,47 @@ namespace CodeBuilder
 
         private void btnExportALL_Click(object sender, RoutedEventArgs e)
         {
-            this.IsEnabled = false;
-            if (settings.strPath.IndexOf("双击此处选择文件导出路径") == 0)
+            if (isRun)
             {
-                if (SelectPath() == false)
-                {
-                    return;
-                }
+                System.Windows.MessageBox.Show("正在执行其他操作，请等待其完成后再操作！");
+                return;
             }
+            Thread thExportAll = new Thread(new ThreadStart(new HandelDelegate(ExportAllCode)));
+            thExportAll.IsBackground = true;
+            thExportAll.Start();
+        }
 
+        private void ExportAllCode()
+        {
+            isRun = true;
+            this.Dispatcher.Invoke(delegate
+            {
+                this.IsEnabled = false;
+                if (settings.strPath.IndexOf("双击此处选择文件导出路径") == 0)
+                {
+                    if (SelectPath() == false)
+                    {
+                        return;
+                    }
+                }
+            });
             for (int i = 0; i < cbTables.Items.Count; i++)
             {
-                CreateCode(cbTables.Items[i].ToString());
-                Export(cbTables.Items[i].ToString());
+                this.Dispatcher.Invoke(delegate
+                {
+                    tbDAL.Text = tbModel.Text = "导出中...";
+                    CreateCode(cbTables.Items[i].ToString());
+                    Export(cbTables.Items[i].ToString());
+                });
+
             }
             ExportHelper();
-            tbDAL.Text = "导出完成！";
-            tbModel.Text = "导出完成！";
-            System.Windows.Forms.MessageBox.Show("导出完成！");
-            this.IsEnabled = true;
-
+            this.Dispatcher.Invoke(delegate
+            {
+                tbDAL.Text = tbModel.Text = "导出完成！";
+                this.IsEnabled = true;
+            });
+            isRun = false;
         }
         private void tbConnStr_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {

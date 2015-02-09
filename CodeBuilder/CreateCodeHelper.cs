@@ -162,7 +162,6 @@ namespace CodeBuilder
         public StringBuilder CreateDALCode(string tableName, DataTable dt)
         {
             StringBuilder sb = new StringBuilder();
-            //public class tableNameDAL{
             sb.AppendLine("public static class  " + tableName + "DAL {");
             sb.AppendLine("");
             CreateToModel(tableName, dt, sb, "");
@@ -196,7 +195,6 @@ namespace CodeBuilder
             sb.AppendLine(sqluse);
             sb.AppendLine("");
             sb.AppendLine("namespace " + strNamespace + " {");
-            //public class tableNameDAL{
             sb.AppendLine("    public static class  " + tableName + "DAL {");
             sb.AppendLine("");
             CreateToModel(tableName, dt, sb, "    ");
@@ -222,20 +220,16 @@ namespace CodeBuilder
         public void CreateToModel(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
-            //private tableName ToModel(DataRow row){
             sb.AppendLine(hasNamespace + "    public static " + tableName + " ToModel(DataRow row) {");
-            //tableName model = new tableName();
             sb.AppendLine(hasNamespace + "        " + tableName + " model = new " + tableName + "();");
             foreach (DataColumn col in dt.Columns)
             {
                 if (GetDataTypeNameString(col).IndexOf("?") > 0)
                 {
-                    //model.Password = (string)SqlHelper.FromDbValue(row["Password"]);
                     sb.AppendLine(hasNamespace + "        model." + col.ColumnName + " = (" + GetDataTypeName(col) + ")" + helper + "Helper.FromDBValue(row[\"" + col.ColumnName + "\"]);");
                 }
                 else
                 {
-                    //model.Password = (string)row["Password"];
                     sb.AppendLine(hasNamespace + "        model." + col.ColumnName + " = (" + GetDataTypeName(col) + ")row[\"" + col.ColumnName + "\"];");
                 }
             }
@@ -260,26 +254,18 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// 获得所有记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <returns>" + tableName + "类的对象的枚举</returns>");
-            //    public IEnumerable<Role> ListAll() {
             sb.AppendLine(hasNamespace + "    public static IEnumerable<" + tableName + "> ListAll() {");
-            //    List<Role> list = new List<Role>();
             sb.AppendLine(hasNamespace + "        List<" + tableName + "> list = new List<" + tableName + ">();");
-            //    DataTable dt = SqlHelper.ExecuteDataTable("SELECT * FROM Role");
             string[] colNames = GetColumnNames(dt);
             for (int i = 0; i < colNames.Length; i++)
             {
                 colNames[i] = leftStr + colNames[i] + rightStr;
             }
             sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + "\");");
-            //    foreach (DataRow row in dt.Rows)  {
             sb.AppendLine(hasNamespace + "        foreach (DataRow row in dt.Rows)  {");
-            //        list.Add(ToModel(row));
             sb.AppendLine(hasNamespace + "            list.Add(ToModel(row));");
-            //    }
             sb.AppendLine(hasNamespace + "        }");
-            //    return list;
             sb.AppendLine(hasNamespace + "        return list;");
-            //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
         }
@@ -313,45 +299,22 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"model\">" + tableName + "类的对象</param>");
             sb.AppendLine(hasNamespace + "    /// <returns>object 主键</returns>");
-            //            public int Insert(Role model) {
             sb.AppendLine(hasNamespace + "    public static object Insert(" + tableName + " model) {");
-            //    SqlHelper.ExecuteNonQuery(
-            //        "INSERT INTO Role(RoleID,RoleName,AdderID,AddIP,AddTime,ModifierID,ModifyIP,ModifyTime) VALUES (@RoleID,@RoleName,@AdderID,@AddIP,@AddTime,@ModifierID,@ModifyIP,@ModifyTime);SELECT @@identity"
-            //                    public bool Insert(T_Users model)
-            //        {
-            //           object obj;
-            //            string isNullId = Convert.ToString(model.Id);
-            //            if (isNullId.Equals("") || isNullId.Equals("0") || isNullId.Equals(new Guid().ToString()) || isNullId.Equals(null))
-            //            {
-            //                obj = SqlHelper.ExecuteScalar(@"INSERT INTO T_Users( UserName, Password, RealName, Section, Status,
-            //            }
-            //            else
-            //            {
-            //                obj = SqlHelper.ExecuteScalar(@"INSERT INTO T_Users(Id, UserName, Password, RealName, Section, 
-            //            }
-            //            return obj;
-            //        }
-
             sb.AppendLine(hasNamespace + "        object obj;");
             sb.AppendLine(hasNamespace + "        string isNullId = Convert.ToString(model." + colNames[0] + ");");
             sb.AppendLine(hasNamespace + "        if (isNullId.Equals(\"\") || isNullId.Equals(\"0\") || isNullId.Equals(new Guid().ToString()) || isNullId.Equals(null))");
             sb.AppendLine(hasNamespace + "        {");
             sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO " + leftStr + tableName + rightStr + "(" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ") SELECT @@IDENTITY AS Id ;\"");
             GetSqlParameter(dt, sb, hasNamespace, true);
-            //    );
             sb.AppendLine(hasNamespace + "                );");
             sb.AppendLine(hasNamespace + "        }");
             sb.AppendLine(hasNamespace + "        else");
             sb.AppendLine(hasNamespace + "        {");
             sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO " + leftStr + tableName + rightStr + "(" + string.Join(", ", colNamesTemp) + ") VALUES(@" + string.Join(", @", colNames) + ") SELECT @@IDENTITY AS Id ;\"");
             GetSqlParameter(dt, sb, hasNamespace, false);
-            //    );
             sb.AppendLine(hasNamespace + "                );");
             sb.AppendLine(hasNamespace + "        }");
-            //        ,new SqlParameter("@RoleID", model.RoleID)
-
             sb.AppendLine(hasNamespace + "    return obj;");
-            //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
         }
@@ -372,15 +335,11 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"model\">" + tableName + "类的对象</param>");
             sb.AppendLine(hasNamespace + "    /// <returns>更新是否成功</returns>");
-            //      public void Update(model model)
             sb.AppendLine(hasNamespace + "    public static bool Update(" + tableName + " model) {");
-            //    Helper.SqlHelper.ExecuteNonQuery("update T_Operators set UserName=@UserName, RealName=@RealName, Password=@Password where Id=@Id", new SqlParameter("@UserName", userName), new SqlParameter("@RealName", realName), new SqlParameter("@Password", password), new SqlParameter("@Id", id));
-
             sb.AppendLine(hasNamespace + "        int count = " + helper + "Helper.ExecuteNonQuery(\"UPDATE " + leftStr + tableName + rightStr + " SET " + string.Join(", ", GetColumnNamesUpdate(dt)) + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\"");
             GetSqlParameter(dt, sb, hasNamespace, false);
             sb.AppendLine(hasNamespace + "        );");
             sb.AppendLine(hasNamespace + "    return count > 0;");
-            //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
         }
@@ -401,34 +360,22 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"Id\">主键</param>");
             sb.AppendLine(hasNamespace + "    /// <returns>" + tableName + "类的对象</returns>");
-            //public Role Get(int id)
             sb.AppendLine(hasNamespace + "    public static " + tableName + " GetById(" + dt.Columns[0].DataType + " " + dt.Columns[0].ColumnName + ") {");
-            //    DataTable dt = SqlHelper.ExecuteDataTable("SELECT * FROM Role WHERE ID=@ID", new SqlParameter("@ID", id));
             string[] colNames = GetColumnNames(dt);
             for (int i = 0; i < colNames.Length; i++)
             {
                 colNames[i] = leftStr + colNames[i] + rightStr;
             }
             sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
-            //    if (dt.Rows.Count > 1) {
             sb.AppendLine(hasNamespace + "        if (dt.Rows.Count > 1) {");
-            //        throw new Exception("more than 1 row was found");
             sb.AppendLine(hasNamespace + "            throw new Exception(\"more than 1 row was found\");");
-            //    }
             sb.AppendLine(hasNamespace + "        }");
-            //    if (dt.Rows.Count <= 0)
             sb.AppendLine(hasNamespace + "        else if (dt.Rows.Count <= 0) {");
-            //        return null;
             sb.AppendLine(hasNamespace + "            return null;");
-            //    }
             sb.AppendLine(hasNamespace + "        }");
-            //    DataRow row = dt.Rows[0];
             sb.AppendLine(hasNamespace + "        DataRow row = dt.Rows[0];");
-            //    Role model = ToModel(row);
             sb.AppendLine(hasNamespace + "        " + tableName + " model = ToModel(row);");
-            //    return model;
             sb.AppendLine(hasNamespace + "        return model;");
-            //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
         }
@@ -449,13 +396,9 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"Id\">主键</param>");
             sb.AppendLine(hasNamespace + "    /// <returns>删除是否成功</returns>");
-            //            public bool Delete(int id)
             sb.AppendLine(hasNamespace + "    public static bool DeleteById(" + dt.Columns[0].DataType + " " + dt.Columns[0].ColumnName + ") {");
-            //    int rows = SqlHelper.ExecuteNonQuery("DELETE FROM Role WHERE ID = @id", new SqlParameter("@id", id));
             sb.AppendLine(hasNamespace + "        int rows = " + helper + "Helper.ExecuteNonQuery(\"DELETE FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + " = @" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
-            //    return rows > 0;
             sb.AppendLine(hasNamespace + "        return rows > 0;");
-            //}
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
         }
@@ -505,18 +448,6 @@ namespace CodeBuilder
         /// <param name="hasNamespace"></param>
         public void CreateListByWhere(string tableName, StringBuilder sb, string hasNamespace)
         {
-            /*
-             * public  IEnumerable<T_Roles> ListByWhere(T_Roles model, params string[] fields)
-             * {
-             *  string str = Helper.GenericSQLGenerator.GetWhereStr<T_Roles>(model,"T_Roles",fields);
-             *   List<T_Roles> list = new List<T_Roles>();
-             *    DataTable dt = SqlHelper.ExecuteDataTable(str);
-             *    foreach (DataRow row in dt.Rows)  {
-             *    list.Add(ToModel(row));
-             *    }
-             *    return list;
-             * }
-             */
             sb.AppendLine(hasNamespace + "    /// <summary>");
             sb.AppendLine(hasNamespace + "    /// 通过条件获得满足条件的记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
@@ -532,10 +463,6 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "         if(whereStr!=null&&whereStr.Trim().Length>0){str=str+\" and \"+whereStr;}");
             sb.AppendLine(hasNamespace + "         List<" + tableName + "> list = new List<" + tableName + ">();");
             sb.AppendLine(hasNamespace + "         " + sqlpar + "[] sqlparm = lsParameter.ToArray();");
-            //sb.AppendLine(hasNamespace + "         for (int i = 0; i < lsParameter.Count; i++)");
-            //sb.AppendLine(hasNamespace + "         {");
-            //sb.AppendLine(hasNamespace + "             sqlparm[i] = lsParameter[i];");
-            //sb.AppendLine(hasNamespace + "         }");
             string helper = sqltype == 2 ? "MySqlHelper" : "SqlHelper";
             sb.AppendLine(hasNamespace + "         DataTable dt = " + helper + ".ExecuteDataTable(str, sqlparm);");
             sb.AppendLine(hasNamespace + "         foreach (DataRow row in dt.Rows)");

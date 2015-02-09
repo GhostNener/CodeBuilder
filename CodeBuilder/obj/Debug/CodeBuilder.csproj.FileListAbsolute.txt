@@ -99,8 +99,6 @@ C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.ex
 C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.pdb
 C:\Users\NENER\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.csprojResolveAssemblyReference.cache
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\CodeBuilder.exe.config
-D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.exe
-D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.pdb
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\CodeBuilder.exe.manifest
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\CodeBuilder.application
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\bin\Debug\CodeBuilder.exe
@@ -117,3 +115,5 @@ D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.Properties.Res
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.csproj.GenerateResource.Cache
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.exe.manifest
 D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.application
+D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.exe
+D:\Documents\GitHub\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.pdb

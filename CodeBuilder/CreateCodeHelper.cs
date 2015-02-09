@@ -531,11 +531,11 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "         string str = Helper.GenericSQLGenerator.GetWhereStr<" + tableName + ">(model, \"" + tableName + "\", out lsParameter, fields);");
             sb.AppendLine(hasNamespace + "         if(whereStr!=null&&whereStr.Trim().Length>0){str=str+\" and \"+whereStr;}");
             sb.AppendLine(hasNamespace + "         List<" + tableName + "> list = new List<" + tableName + ">();");
-            sb.AppendLine(hasNamespace + "         " + sqlpar + "[] sqlparm = new " + sqlpar + "[lsParameter.Count];");
-            sb.AppendLine(hasNamespace + "         for (int i = 0; i < lsParameter.Count; i++)");
-            sb.AppendLine(hasNamespace + "         {");
-            sb.AppendLine(hasNamespace + "             sqlparm[i] = lsParameter[i];");
-            sb.AppendLine(hasNamespace + "         }");
+            sb.AppendLine(hasNamespace + "         " + sqlpar + "[] sqlparm = lsParameter.ToArray();");
+            //sb.AppendLine(hasNamespace + "         for (int i = 0; i < lsParameter.Count; i++)");
+            //sb.AppendLine(hasNamespace + "         {");
+            //sb.AppendLine(hasNamespace + "             sqlparm[i] = lsParameter[i];");
+            //sb.AppendLine(hasNamespace + "         }");
             string helper = sqltype == 2 ? "MySqlHelper" : "SqlHelper";
             sb.AppendLine(hasNamespace + "         DataTable dt = " + helper + ".ExecuteDataTable(str, sqlparm);");
             sb.AppendLine(hasNamespace + "         foreach (DataRow row in dt.Rows)");

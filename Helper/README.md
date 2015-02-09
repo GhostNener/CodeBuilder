@@ -8,4 +8,4 @@
 
 ### MySql
 - GenericMySQLGeneratorHelper
-- SqlHelper
+- MySqlHelper

@@ -50,7 +50,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>cgyshcqfDPlNMo1143a7HXUJOgAFO+PZPDxnmwBVMr4=</dsig:DigestValue>
+        <dsig:DigestValue>6FKGq19CASr7jWw3GUhgeOQdWkJyDX4BZldfPJUVAOg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -66,13 +66,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="CodeBuilder.exe.config" size="21198">
+  <file name="CodeBuilder.exe.config" size="21195">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>yzK7ciMFeuokE+yPUSrsrFwSdxPOPKtYhS9/mSF31ts=</dsig:DigestValue>
+      <dsig:DigestValue>Ahx0A75cNBFLBeVVXsYrMxLQO3Y8XfUS5GY5LKkUCUI=</dsig:DigestValue>
     </hash>
   </file>
   <file name="CodeBuilder.ico" size="67646">

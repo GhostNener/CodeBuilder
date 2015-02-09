@@ -113,6 +113,7 @@ namespace CodeBuilder
             sqlcom.Items.Add("SQL Server");
             sqlcom.Items.Add("MySql");
             sqlcom.SelectedIndex = 0;
+            tbSelectPath.IsReadOnly = true;
         }
         /// <summary>
         /// 链接点击事件

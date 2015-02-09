@@ -6,7 +6,7 @@
       <Value Profile="(Default)">Server=.\SQLEXPRESS;Database=ECMS;Trusted_Connection=True;</Value>
     </Setting>
     <Setting Name="strNamespace" Type="System.String" Scope="User">
-      <Value Profile="(Default)">命名空间</Value>
+      <Value Profile="(Default)">MyProject</Value>
     </Setting>
     <Setting Name="strPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">双击此处选择文件导出路径...</Value>

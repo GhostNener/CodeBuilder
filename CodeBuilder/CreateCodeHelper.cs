@@ -96,16 +96,18 @@ namespace CodeBuilder
         private static void GetSqlParameter(DataTable dt, StringBuilder sb, string hasNamespace, bool isNullId)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
+            string heP = helper;
+            helper = "Helper." + helper;
             for (int i = 0; i < dt.Columns.Count; i++)
             {
                 if (i == 0 && isNullId == true) { continue; }
                 if (GetDataTypeNameString(dt.Columns[i]).IndexOf("?") > 0)
                 {
-                    sb.AppendLine(hasNamespace + "                    ,new " + helper + "Parameter(\"@" + dt.Columns[i].ColumnName + "\", " + helper + "Helper.ToDBValue(model." + dt.Columns[i].ColumnName + "))");
+                    sb.AppendLine(hasNamespace + "                    ,new " + heP + "Parameter(\"@" + dt.Columns[i].ColumnName + "\", " + helper + "Helper.ToDBValue(model." + dt.Columns[i].ColumnName + "))");
                 }
                 else
                 {
-                    sb.AppendLine(hasNamespace + "                    ,new " + helper + "Parameter(\"@" + dt.Columns[i].ColumnName + "\", model." + dt.Columns[i].ColumnName + ")");
+                    sb.AppendLine(hasNamespace + "                    ,new " + heP + "Parameter(\"@" + dt.Columns[i].ColumnName + "\", model." + dt.Columns[i].ColumnName + ")");
                 }
             }
         }
@@ -219,6 +221,7 @@ namespace CodeBuilder
         public void CreateToModel(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
+            helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "    public static " + tableName + " ToModel(DataRow row) {");
             sb.AppendLine(hasNamespace + "        " + tableName + " model = new " + tableName + "();");
             foreach (DataColumn col in dt.Columns)
@@ -249,6 +252,7 @@ namespace CodeBuilder
         public void CreateListAll(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
+            helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "    /// <summary>");
             sb.AppendLine(hasNamespace + "    /// 获得所有记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
@@ -280,6 +284,7 @@ namespace CodeBuilder
         public void CreateInsert(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
+            helper = "Helper." + helper;
             string[] colNames = GetColumnNames(dt);
             string[] colNamesTemp = new string[colNames.Length];
             string[] nullIdNames = new string[colNames.Length - 1];
@@ -329,6 +334,7 @@ namespace CodeBuilder
         public void CreateUpdate(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
+            helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "    /// <summary>");
             sb.AppendLine(hasNamespace + "    /// 更新一条记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
@@ -354,6 +360,8 @@ namespace CodeBuilder
         public void CreateGetById(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
+            string heP = helper;
+            helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "    /// <summary>");
             sb.AppendLine(hasNamespace + "    /// 获得一条记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
@@ -365,7 +373,7 @@ namespace CodeBuilder
             {
                 colNames[i] = leftStr + colNames[i] + rightStr;
             }
-            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
+            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\", new " + heP + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
             sb.AppendLine(hasNamespace + "        if (dt.Rows.Count > 1) {");
             sb.AppendLine(hasNamespace + "            throw new Exception(\"more than 1 row was found\");");
             sb.AppendLine(hasNamespace + "        }");
@@ -390,13 +398,15 @@ namespace CodeBuilder
         public void CreateDeleteById(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
             string helper = sqltype == 2 ? "MySql" : "Sql";
+            string heP = helper;
+            helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "    /// <summary>");
             sb.AppendLine(hasNamespace + "    /// 删除一条记录");
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <param name=\"Id\">主键</param>");
             sb.AppendLine(hasNamespace + "    /// <returns>删除是否成功</returns>");
             sb.AppendLine(hasNamespace + "    public static bool DeleteById(" + dt.Columns[0].DataType + " " + dt.Columns[0].ColumnName + ") {");
-            sb.AppendLine(hasNamespace + "        int rows = " + helper + "Helper.ExecuteNonQuery(\"DELETE FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + " = @" + dt.Columns[0].ColumnName + "\", new " + helper + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
+            sb.AppendLine(hasNamespace + "        int rows = " + helper + "Helper.ExecuteNonQuery(\"DELETE FROM " + leftStr + tableName + rightStr + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + " = @" + dt.Columns[0].ColumnName + "\", new " + heP + "Parameter(\"@" + dt.Columns[0].ColumnName + "\", " + dt.Columns[0].ColumnName + "));");
             sb.AppendLine(hasNamespace + "        return rows > 0;");
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
@@ -432,7 +442,7 @@ namespace CodeBuilder
             string pagetemp1 = sqltype == 2 ? "        if (whereArr != null && whereArr.Length > 0) { whereStr = \" and \" + string.Join(\" and \", whereArr); }" : "        if (where != null && where.Length > 0) { whereStr = \" and a.\" + string.Join(\" and a.\", where); }";
             sb.AppendLine(hasNamespace + pagetemp1);
             sb.AppendLine(hasNamespace + "        if (isDesc) { orderBy += \" desc\"; }");
-            string pagetemp2 = sqltype == 2 ? "        DataTable dt = MySqlHelper.ExecuteDataTable(string.Format(@\"SELECT * FROM " + leftStr + tableName + rightStr + " WHERE (1=1) {0} ORDER BY {1} ASC LIMIT {2}, {3};\" , whereStr,orderBy,  ((page -1)* num), num));" : "        DataTable dt = SqlHelper.ExecuteDataTable(string.Format(@\"SELECT b.* FROM ( SELECT  a.*, ROW_NUMBER () OVER (ORDER BY a.{0} ) AS RowNumber FROM  " + leftStr + tableName + rightStr + " AS a WHERE (1 = 1) {1}) AS b WHERE  RowNumber BETWEEN {2} AND {3} ORDER BY b.{0}\" , orderBy, whereStr, ((page-1) * num + 1), page * num));";
+            string pagetemp2 = sqltype == 2 ? "        DataTable dt = Helper.MySqlHelper.ExecuteDataTable(string.Format(@\"SELECT * FROM " + leftStr + tableName + rightStr + " WHERE (1=1) {0} ORDER BY {1} ASC LIMIT {2}, {3};\" , whereStr,orderBy,  ((page -1)* num), num));" : "        DataTable dt = Helper.SqlHelper.ExecuteDataTable(string.Format(@\"SELECT b.* FROM ( SELECT  a.*, ROW_NUMBER () OVER (ORDER BY a.{0} ) AS RowNumber FROM  " + leftStr + tableName + rightStr + " AS a WHERE (1 = 1) {1}) AS b WHERE  RowNumber BETWEEN {2} AND {3} ORDER BY b.{0}\" , orderBy, whereStr, ((page-1) * num + 1), page * num));";
             sb.AppendLine(hasNamespace + pagetemp2);
             sb.AppendLine(hasNamespace + "        foreach (DataRow row in dt.Rows) { list.Add(ToModel(row)); }");
             sb.AppendLine(hasNamespace + "        return list;");
@@ -463,6 +473,7 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "         List<" + tableName + "> list = new List<" + tableName + ">();");
             sb.AppendLine(hasNamespace + "         " + sqlpar + "[] sqlparm = lsParameter.ToArray();");
             string helper = sqltype == 2 ? "MySqlHelper" : "SqlHelper";
+            helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "         DataTable dt = " + helper + ".ExecuteDataTable(str, sqlparm);");
             sb.AppendLine(hasNamespace + "         foreach (DataRow row in dt.Rows)");
             sb.AppendLine(hasNamespace + "         {");

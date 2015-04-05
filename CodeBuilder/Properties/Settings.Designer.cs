@@ -270,29 +270,29 @@ namespace CodeBuilder.Properties {
             "ame, out List<MySqlParameter> list, params string[] fields) where T : new()\r\n   " +
             "     {\r\n            StringBuilder sbu = new StringBuilder();\r\n            list =" +
             " new List<MySqlParameter>();\r\n\r\n            sbu.Append(\"\");\r\n            sbu.App" +
-            "end(\"select * from [\" + tableName + \"] where (1=1)\");\r\n            if (fields !=" +
+            "end(\"select * from `\" + tableName + \"` where (1=1)\");\r\n            if (fields !=" +
             " null)\r\n            {\r\n                //遍历每一个要生成MySql的字段，取出内容\r\n                " +
             "foreach (string field in fields)\r\n                {\r\n                    object " +
             "value = entity.GetType().GetProperty(field).GetValue(entity, null);\r\n           " +
             "         if (value is int || value is double || value is decimal || value is dou" +
             "ble || value is long || value is float)\r\n                    {\r\n\r\n              " +
-            "          sbu.AppendFormat(\" and ([{0}]=@{0})\", field);\r\n                       " +
+            "          sbu.AppendFormat(\" and (`{0}`=@{0})\", field);\r\n                       " +
             " list.Add(new MySqlParameter(\"@\" + field + \"\", value));\r\n\r\n                    }" +
             "\r\n                    else if (value is DateTime)\r\n                    {\r\n      " +
-            "                  sbu.AppendFormat(\" and ([{0}]=@{0})\", field);\r\n               " +
+            "                  sbu.AppendFormat(\" and (`{0}`=@{0})\", field);\r\n               " +
             "         list.Add(new MySqlParameter(\"@\" + field + \"\", Convert.ToDateTime(value)" +
             "));\r\n\r\n                    }\r\n                    else if (value is Guid)\r\n     " +
-            "               {\r\n                        sbu.AppendFormat(\" and ([{0}]=@{0})\", " +
+            "               {\r\n                        sbu.AppendFormat(\" and (`{0}`=@{0})\", " +
             "field);\r\n                        list.Add(new MySqlParameter(\"@\" + field + \"\", n" +
             "ew Guid(value.ToString())));\r\n\r\n                    }\r\n                    else " +
             "if (value is Boolean)\r\n                    {\r\n                        sbu.Append" +
-            "Format(\" and ([{0}]=@{0})\", field);\r\n                        list.Add(new MySqlP" +
+            "Format(\" and (`{0}`=@{0})\", field);\r\n                        list.Add(new MySqlP" +
             "arameter(\"@\" + field + \"\", Convert.ToBoolean(value)));\r\n\r\n                    }\r" +
             "\n                    else if (value is String || value is Char)\r\n               " +
-            "     {\r\n                        sbu.AppendFormat(\" and ([{0}]=@{0})\", field);\r\n " +
+            "     {\r\n                        sbu.AppendFormat(\" and (`{0}`=@{0})\", field);\r\n " +
             "                       list.Add(new MySqlParameter(\"@\" + field + \"\", Convert.ToS" +
             "tring(value)));\r\n\r\n                    }\r\n                    else\r\n            " +
-            "        {\r\n                        sbu.AppendFormat(\" and ([{0}]=@{0})\", field);" +
+            "        {\r\n                        sbu.AppendFormat(\" and (`{0}`=@{0})\", field);" +
             "\r\n                        list.Add(new MySqlParameter(\"@\" + field + \"\", Helper.M" +
             "ySqlHelper.ToDBValue(value)));\r\n                    }\r\n                }\r\n      " +
             "      }\r\n            return (sbu.ToString());\r\n        }\r\n    }\r\n}")]

@@ -34,3 +34,4 @@ E:\InMyLife\SourceTree\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.exe.manifes
 E:\InMyLife\SourceTree\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.application
 E:\InMyLife\SourceTree\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.exe
 E:\InMyLife\SourceTree\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.pdb
+E:\InMyLife\SourceTree\CodeBuilder\CodeBuilder\obj\Debug\CodeBuilder.csprojResolveAssemblyReference.cache

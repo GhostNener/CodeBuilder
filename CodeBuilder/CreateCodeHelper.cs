@@ -264,7 +264,7 @@ namespace CodeBuilder
             {
                 colNames[i] = leftStr + colNames[i] + rightStr;
             }
-            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + "\");");
+            sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + ";\");");
             sb.AppendLine(hasNamespace + "        foreach (DataRow row in dt.Rows)  {");
             sb.AppendLine(hasNamespace + "            list.Add(ToModel(row));");
             sb.AppendLine(hasNamespace + "        }");
@@ -308,13 +308,13 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "        string isNullId = Convert.ToString(model." + colNames[0] + ");");
             sb.AppendLine(hasNamespace + "        if (isNullId.Equals(\"\") || isNullId.Equals(\"0\") || isNullId.Equals(new Guid().ToString()) || isNullId.Equals(null))");
             sb.AppendLine(hasNamespace + "        {");
-            sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO " + leftStr + tableName + rightStr + "(" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + ") SELECT @@IDENTITY AS Id ;\"");
+            sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO " + leftStr + tableName + rightStr + "(" + string.Join(", ", nullIdNamesTemp) + ") VALUES(@" + string.Join(", @", nullIdNames) + "); SELECT @@IDENTITY AS Id ;\"");
             GetSqlParameter(dt, sb, hasNamespace, true);
             sb.AppendLine(hasNamespace + "                );");
             sb.AppendLine(hasNamespace + "        }");
             sb.AppendLine(hasNamespace + "        else");
             sb.AppendLine(hasNamespace + "        {");
-            sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO " + leftStr + tableName + rightStr + "(" + string.Join(", ", colNamesTemp) + ") VALUES(@" + string.Join(", @", colNames) + ") SELECT @@IDENTITY AS Id ;\"");
+            sb.AppendLine(hasNamespace + "           obj = " + helper + "Helper.ExecuteScalar(@\"INSERT INTO " + leftStr + tableName + rightStr + "(" + string.Join(", ", colNamesTemp) + ") VALUES(@" + string.Join(", @", colNames) + "); SELECT @@IDENTITY AS Id ;\"");
             GetSqlParameter(dt, sb, hasNamespace, false);
             sb.AppendLine(hasNamespace + "                );");
             sb.AppendLine(hasNamespace + "        }");
@@ -341,7 +341,7 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// <param name=\"model\">" + tableName + "类的对象</param>");
             sb.AppendLine(hasNamespace + "    /// <returns>更新是否成功</returns>");
             sb.AppendLine(hasNamespace + "    public static bool Update(" + tableName + " model) {");
-            sb.AppendLine(hasNamespace + "        int count = " + helper + "Helper.ExecuteNonQuery(\"UPDATE " + leftStr + tableName + rightStr + " SET " + string.Join(", ", GetColumnNamesUpdate(dt)) + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + "\"");
+            sb.AppendLine(hasNamespace + "        int count = " + helper + "Helper.ExecuteNonQuery(\"UPDATE " + leftStr + tableName + rightStr + " SET " + string.Join(", ", GetColumnNamesUpdate(dt)) + " WHERE " + leftStr + dt.Columns[0].ColumnName + rightStr + "=@" + dt.Columns[0].ColumnName + ";\"");
             GetSqlParameter(dt, sb, hasNamespace, false);
             sb.AppendLine(hasNamespace + "        );");
             sb.AppendLine(hasNamespace + "    return count > 0;");

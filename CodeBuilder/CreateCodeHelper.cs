@@ -250,17 +250,13 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "    /// </summary>");
             sb.AppendLine(hasNamespace + "    /// <returns>" + tableName + "类的对象的枚举</returns>");
             sb.AppendLine(hasNamespace + "    public static IEnumerable<" + tableName + "> ListAll() {");
-            sb.AppendLine(hasNamespace + "        List<" + tableName + "> list = new List<" + tableName + ">();");
             string[] colNames = GetColumnNames(dt);
             for (int i = 0; i < colNames.Length; i++)
             {
                 colNames[i] = leftStr + colNames[i] + rightStr;
             }
             sb.AppendLine(hasNamespace + "        DataTable dt = " + helper + "Helper.ExecuteDataTable(\"SELECT " + string.Join(", ", colNames) + " FROM " + leftStr + tableName + rightStr + ";\");");
-            sb.AppendLine(hasNamespace + "        foreach (DataRow row in dt.Rows)  {");
-            sb.AppendLine(hasNamespace + "            list.Add(ToModel(row));");
-            sb.AppendLine(hasNamespace + "        }");
-            sb.AppendLine(hasNamespace + "        return list;");
+            sb.AppendLine(hasNamespace + "         return Helper.GenericSQLGenerator.ToList<" + tableName + ">(dt);");
             sb.AppendLine(hasNamespace + "    }");
             sb.AppendLine("");
         }
@@ -430,14 +426,12 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "        foreach (var v in whereArr) { if (v != null && v != \"\") { ls.Add(v); } }");
             sb.AppendLine(hasNamespace + "        whereArr = ls.ToArray();");
             sb.AppendLine(hasNamespace + "        if (num < 1 || page < 1) { return null; }");
-            sb.AppendLine(hasNamespace + "        List<" + tableName + "> list = new List<" + tableName + ">();");
             string pagetemp1 = sqltype == 2 ? "        if (whereArr != null && whereArr.Length > 0) { whereStr = \" and \" + string.Join(\" and \", whereArr); }" : "        if (whereArr != null && whereArr.Length > 0) { whereStr = \" and a.\" + string.Join(\" and a.\", whereArr); }";
             sb.AppendLine(hasNamespace + pagetemp1);
             sb.AppendLine(hasNamespace + "        if (isDesc) { orderBy += \" desc\"; }");
             string pagetemp2 = sqltype == 2 ? "        DataTable dt = Helper.MySqlHelper.ExecuteDataTable(string.Format(@\"SELECT * FROM " + leftStr + tableName + rightStr + " WHERE (1=1) {0} ORDER BY {1}  LIMIT {2}, {3};\" , whereStr,orderBy,  ((page -1)* num), num));" : "        DataTable dt = Helper.SqlHelper.ExecuteDataTable(string.Format(@\"SELECT b.* FROM ( SELECT  a.*, ROW_NUMBER () OVER (ORDER BY a.{0} ) AS RowNumber FROM  " + leftStr + tableName + rightStr + " AS a WHERE (1 = 1) {1}) AS b WHERE  RowNumber BETWEEN {2} AND {3} ORDER BY b.{0}\" , orderBy, whereStr, ((page-1) * num + 1), page * num));";
             sb.AppendLine(hasNamespace + pagetemp2);
-            sb.AppendLine(hasNamespace + "        foreach (DataRow row in dt.Rows) { list.Add(ToModel(row)); }");
-            sb.AppendLine(hasNamespace + "        return list;");
+            sb.AppendLine(hasNamespace + "        return Helper.GenericSQLGenerator.ToList<"+tableName+">(dt);");
             sb.AppendLine(hasNamespace + "    }");
         }
         #region CreateListByWhere 生成ListByWhere
@@ -462,16 +456,11 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "         List<" + sqlpar + "> lsParameter = new List<" + sqlpar + ">();");
             sb.AppendLine(hasNamespace + "         string str = Helper.GenericSQLGenerator.GetWhereStr<" + tableName + ">(model, \"" + tableName + "\", out lsParameter, fields);");
             sb.AppendLine(hasNamespace + "         if(whereStr!=null&&whereStr.Trim().Length>0){str=str+\" and \"+whereStr;}");
-            sb.AppendLine(hasNamespace + "         List<" + tableName + "> list = new List<" + tableName + ">();");
             sb.AppendLine(hasNamespace + "         " + sqlpar + "[] sqlparm = lsParameter.ToArray();");
             string helper = sqltype == 2 ? "MySqlHelper" : "SqlHelper";
             helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "         DataTable dt = " + helper + ".ExecuteDataTable(str, sqlparm);");
-            sb.AppendLine(hasNamespace + "         foreach (DataRow row in dt.Rows)");
-            sb.AppendLine(hasNamespace + "         {");
-            sb.AppendLine(hasNamespace + "             list.Add(ToModel(row));");
-            sb.AppendLine(hasNamespace + "         }");
-            sb.AppendLine(hasNamespace + "         return list;");
+            sb.AppendLine(hasNamespace + "         return Helper.GenericSQLGenerator.ToList<" + tableName + ">(dt);");
             sb.AppendLine(hasNamespace + "     }");
             sb.AppendLine("");
         }

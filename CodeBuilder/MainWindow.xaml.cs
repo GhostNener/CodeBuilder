@@ -162,7 +162,7 @@ namespace CodeBuilder
             DataTable dt = null;
             try
             {
-                string gettable = sqltype == 2 ? "SHOW TABLES" : "Select Name FROM SysObjects Where XType IN ('U','V')orDER BY Name";
+                string gettable = sqltype == 2 ? "SHOW TABLES" : "Select Name FROM sysobjects Where XType IN ('U','V')ORDER BY Name";
                 dt = ExecuteDataTable(gettable);
                 if (dt == null) return;
                 //把获取到的表名填充到下拉框内

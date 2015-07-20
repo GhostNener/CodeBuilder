@@ -220,22 +220,14 @@ namespace CodeBuilder
         /// <param name="hasNamespace"></param>
         public void CreateToModel(string tableName, DataTable dt, StringBuilder sb, string hasNamespace)
         {
+        //            public static Fkp_BindCar ToModel(DataRow row) {
+        //    return Helper.GenericSQLGenerator.ToModel<Fkp_BindCar>(row);
+        //}
             string helper = sqltype == 2 ? "MySql" : "Sql";
             helper = "Helper." + helper;
             sb.AppendLine(hasNamespace + "    public static " + tableName + " ToModel(DataRow row) {");
-            sb.AppendLine(hasNamespace + "        " + tableName + " model = new " + tableName + "();");
-            foreach (DataColumn col in dt.Columns)
-            {
-                if (GetDataTypeNameString(col).IndexOf("?") > 0)
-                {
-                    sb.AppendLine(hasNamespace + "        model." + col.ColumnName + " = (" + GetDataTypeName(col) + ")" + helper + "Helper.FromDBValue(row[\"" + col.ColumnName + "\"]);");
-                }
-                else
-                {
-                    sb.AppendLine(hasNamespace + "        model." + col.ColumnName + " = (" + GetDataTypeName(col) + ")row[\"" + col.ColumnName + "\"];");
-                }
-            }
-            sb.AppendLine(hasNamespace + "        return model;");
+
+            sb.AppendLine(hasNamespace + "        return Helper.GenericSQLGenerator.ToModel<" + tableName + ">(row);");
             sb.AppendLine(hasNamespace + "    }");//ToModel
             sb.AppendLine("");
         }
@@ -439,7 +431,7 @@ namespace CodeBuilder
             sb.AppendLine(hasNamespace + "        whereArr = ls.ToArray();");
             sb.AppendLine(hasNamespace + "        if (num < 1 || page < 1) { return null; }");
             sb.AppendLine(hasNamespace + "        List<" + tableName + "> list = new List<" + tableName + ">();");
-            string pagetemp1 = sqltype == 2 ? "        if (whereArr != null && whereArr.Length > 0) { whereStr = \" and \" + string.Join(\" and \", whereArr); }" : "        if (where != null && where.Length > 0) { whereStr = \" and a.\" + string.Join(\" and a.\", where); }";
+            string pagetemp1 = sqltype == 2 ? "        if (whereArr != null && whereArr.Length > 0) { whereStr = \" and \" + string.Join(\" and \", whereArr); }" : "        if (whereArr != null && whereArr.Length > 0) { whereStr = \" and a.\" + string.Join(\" and a.\", whereArr); }";
             sb.AppendLine(hasNamespace + pagetemp1);
             sb.AppendLine(hasNamespace + "        if (isDesc) { orderBy += \" desc\"; }");
             string pagetemp2 = sqltype == 2 ? "        DataTable dt = Helper.MySqlHelper.ExecuteDataTable(string.Format(@\"SELECT * FROM " + leftStr + tableName + rightStr + " WHERE (1=1) {0} ORDER BY {1}  LIMIT {2}, {3};\" , whereStr,orderBy,  ((page -1)* num), num));" : "        DataTable dt = Helper.SqlHelper.ExecuteDataTable(string.Format(@\"SELECT b.* FROM ( SELECT  a.*, ROW_NUMBER () OVER (ORDER BY a.{0} ) AS RowNumber FROM  " + leftStr + tableName + rightStr + " AS a WHERE (1 = 1) {1}) AS b WHERE  RowNumber BETWEEN {2} AND {3} ORDER BY b.{0}\" , orderBy, whereStr, ((page-1) * num + 1), page * num));";

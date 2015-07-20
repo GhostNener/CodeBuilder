@@ -14,12 +14,58 @@
     <Setting Name="GenericSQLGeneratorHelper" Type="System.String" Scope="Application">
       <Value Profile="(Default)">using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 using System.Text;
 namespace Helper
 {
     public static class GenericSQLGenerator
     {
+        public static T ToModel&lt;T&gt;(DataRow row) where T : class,new()
+        {
+            var prList = GetPropertyInfo&lt;T&gt;(row.Table);
+            var item = new T();
+            prList.ForEach(p =&gt;
+            {
+                if (row[p.Name] != DBNull.Value)
+                {
+                    p.SetValue(item, row[p.Name], null);
+                }
+            });
+            return item;
+        }
+        public static List&lt;PropertyInfo&gt; GetPropertyInfo&lt;T&gt;(DataTable dt) where T : class,new()
+        {
+            Type type = typeof(T);
+            var prList = new List&lt;PropertyInfo&gt;();
+            Array.ForEach(type.GetProperties(), p =&gt;
+            {
+                if (dt.Columns.Contains(p.Name))
+                {
+                    prList.Add(p);
+                }
+            });
+            return prList;
+        }
+        public static List&lt;T&gt; ToList&lt;T&gt;(DataTable dt) where T : class,new()
+        {
+            var prList=GetPropertyInfo&lt;T&gt;(dt);
+            List&lt;T&gt; ls = new List&lt;T&gt;();
+            foreach (DataRow row in dt.Rows)
+            {
+                var item = new T();
+                prList.ForEach(p =&gt;
+                {
+                    if (row[p.Name] != DBNull.Value)
+                    {
+                        p.SetValue(item, row[p.Name], null);
+                    }
+                });
+                ls.Add(item);
+            }
+            return ls;
+        }
         public static string GetWhereStr&lt;T&gt;(T entity, string tableName, out List&lt;SqlParameter&gt; list, params string[] fields) where T : new()
         {
             StringBuilder sbu = new StringBuilder();
@@ -58,14 +104,16 @@ namespace Helper
                         list.Add(new SqlParameter("@" + field + "", Convert.ToBoolean(value)));
 
                     }
-                    else if(value is String||value is Char)
+                    else if (value is String || value is Char)
                     {
                         sbu.AppendFormat(" and ([{0}]=@{0})", field);
                         list.Add(new SqlParameter("@" + field + "", Convert.ToString(value)));
 
-                    }else{
+                    }
+                    else
+                    {
                         sbu.AppendFormat(" and ([{0}]=@{0})", field);
-                        list.Add(new SqlParameter("@" + field + "",Helper.SqlHelper.ToDBValue( value)));
+                        list.Add(new SqlParameter("@" + field + "", Helper.SqlHelper.ToDBValue(value)));
                     }
                 }
             }
